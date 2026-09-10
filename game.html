@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>視力保健大富翁</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            margin-top: 30px;
+        }
+
+        .board {
+            width: 600px;
+            height: 600px;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 5px;
+        }
+
+        .cell {
+            background-color: white;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-size: 16px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .center {
+            grid-column: 2 / 5;
+            grid-row: 2 / 5;
+            background-color: #e8f5e9;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .player {
+            font-size: 28px;
+            margin-top: 5px;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 10px 25px;
+            cursor: pointer;
+        }
+
+        #diceResult {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #health {
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🎲 視力保健大富翁</h1>
+
+    <div class="board">
+
+        <!-- 第一排 -->
+        <div class="cell" id="cell0">
+            起點
+            <span class="player" id="player">🧍</span>
+        </div>
+
+        <div class="cell" id="cell1">1<br>休息一下</div>
+        <div class="cell" id="cell2">2<br>手機</div>
+        <div class="cell" id="cell3">3<br>閱讀</div>
+        <div class="cell" id="cell4">4<br>休息站</div>
+
+        <!-- 第二排 -->
+        <div class="cell" id="cell15">15<br>戶外活動</div>
+
+        <div class="center">
+            👁️<br>
+            視力保健
+        </div>
+
+        <div class="cell" id="cell5">5<br>平板</div>
+
+        <!-- 第三排 -->
+        <div class="cell" id="cell14">14<br>睡眠</div>
+        <div class="cell" id="cell6">6<br>3C</div>
+
+        <!-- 第四排 -->
+        <div class="cell" id="cell13">13<br>眼睛休息</div>
+        <div class="cell" id="cell7">7<br>考試</div>
+
+        <!-- 第五排 -->
+        <div class="cell" id="cell12">12<br>健康檢查</div>
+        <div class="cell" id="cell11">11<br>熬夜</div>
+        <div class="cell" id="cell10">10<br>護眼</div>
+        <div class="cell" id="cell9">9<br>用眼過度</div>
+        <div class="cell" id="cell8">8<br>休息</div>
+
+    </div>
+
+    <p id="diceResult">點擊按鈕擲骰子</p>
+
+    <p id="health">❤️ 視力健康：100</p>
+
+    <button onclick="rollDice()">🎲 擲骰子</button>
+
+    <script>
+
+        let position = 0;
+        let health = 100;
+
+        function rollDice() {
+
+            // 隨機骰子 1～6
+            let dice = Math.floor(Math.random() * 6) + 1;
+
+            document.getElementById("diceResult").textContent =
+                "你擲出了 " + dice + " 點！";
+
+            // 計算新位置
+            position = position + dice;
+
+            // 繞一圈後回到起點
+            if (position >= 16) {
+                position = position - 16;
+            }
+
+            // 把棋子從原本的位置移除
+            for (let i = 0; i < 16; i++) {
+                let cell = document.getElementById("cell" + i);
+
+                if (cell) {
+                    cell.innerHTML = cell.innerHTML.replace(
+                        '<span class="player" id="player">🧍</span>',
+                        ""
+                    );
+                }
+            }
+
+            // 把棋子放到新位置
+            document.getElementById("cell" + position).innerHTML +=
+                '<span class="player" id="player">🧍</span>';
+
+            // 更新健康值
+            updateHealth();
+            
+            showEvent();
+        }
+
+        function updateHealth() {
+
+            if (position === 2 || position === 5) {
+                health -= 5;
+            }
+
+            if (position === 11 || position === 9) {
+                health -= 10;
+            }
+
+            if (position === 15 || position === 13) {
+                health += 5;
+            }
+
+            if (position === 12) {
+                health += 10;
+            }
+
+            // 健康值最高100，最低0
+            if (health > 100) {
+                health = 100;
+            }
+
+            if (health < 0) {
+                health = 0;
+            }
+
+            document.getElementById("health").textContent =
+                "❤️ 視力健康：" + health;
+        }
+        
+function showEvent() {
+
+    let eventText = "";
+
+    if (position === 2) {
+        eventText = "📱 你長時間使用手機，眼睛感到疲勞！";
+    }
+
+    if (position === 5) {
+        eventText = "📱 長時間使用平板，記得讓眼睛休息一下！";
+    }
+
+    if (position === 9) {
+        eventText = "👀 用眼過度！眼睛需要休息了！";
+    }
+
+    if (position === 11) {
+        eventText = "🌙 熬夜會讓眼睛很疲累，早點睡吧！";
+    }
+
+    if (position === 13) {
+        eventText = "😌 讓眼睛休息一下，視力健康 +5！";
+    }
+
+    if (position === 15) {
+        eventText = "🌳 去戶外活動吧！眼睛獲得休息！";
+    }
+
+    if (position === 12) {
+        eventText = "🏥 定期進行視力檢查，有助於維持眼睛健康！";
+    }
+
+    if (eventText !== "") {
+        alert(eventText);
+    }
+
+}
+    </script>
+
+</body>
+</html>
