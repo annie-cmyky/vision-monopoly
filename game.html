@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <title>視力保健大富翁</title>
 
     <style>
+
         body {
             font-family: sans-serif;
             text-align: center;
@@ -19,44 +21,68 @@
             width: 600px;
             height: 600px;
             margin: 30px auto;
+
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr);
+
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(7, 1fr);
+
             gap: 5px;
         }
 
         .cell {
             background-color: white;
+
             border: 2px solid #333;
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             flex-direction: column;
-            font-size: 16px;
+
+            font-size: 14px;
             font-weight: bold;
+
             position: relative;
         }
 
         .center {
-            grid-column: 2 / 5;
-            grid-row: 2 / 5;
+            grid-column: 2 / 7;
+            grid-row: 2 / 7;
+
             background-color: #e8f5e9;
+
             border: 2px solid #333;
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             font-size: 28px;
         }
 
         .player {
-            font-size: 28px;
-            margin-top: 5px;
+            font-size: 26px;
+            margin-top: 3px;
+        }
+
+        .event-cell {
+            background-color: #fff3e0;
+        }
+
+        .quiz-cell {
+            background-color: #e3f2fd;
         }
 
         button {
-            font-size: 20px;
-            padding: 10px 25px;
+            font-size: 18px;
+
+            padding: 10px 20px;
+
             cursor: pointer;
+
+            margin: 5px;
         }
 
         #diceResult {
@@ -64,175 +90,903 @@
             font-weight: bold;
         }
 
-        #health {
-            font-size: 20px;
-            font-weight: bold;
+
+        /* =========================
+           卡片背景
+           ========================= */
+
+        #cardOverlay {
+
+            display: none;
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background-color: rgba(0, 0, 0, 0.5);
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 1000;
         }
+
+
+        /* =========================
+           卡片本體
+           ========================= */
+
+        #card {
+
+            width: 450px;
+
+            min-height: 280px;
+
+            background-color: white;
+
+            border-radius: 20px;
+
+            padding: 30px;
+
+            box-sizing: border-box;
+
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+
+        }
+
+
+        #cardTitle {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        #cardContent {
+
+            font-size: 20px;
+
+            line-height: 1.6;
+
+            margin-bottom: 20px;
+
+        }
+
+
+        /* =========================
+           問答選項
+           ========================= */
+
+        .answerButton {
+
+            display: block;
+
+            width: 100%;
+
+            margin: 10px 0;
+
+            padding: 12px;
+
+            font-size: 17px;
+
+            text-align: left;
+
+            border: 2px solid #aaa;
+
+            border-radius: 10px;
+
+            background-color: white;
+
+        }
+
+        .answerButton:hover {
+
+            background-color: #eeeeee;
+
+        }
+
+
+        #quizResult {
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            margin-top: 15px;
+
+        }
+
+
+        /* =========================
+           關閉卡片
+           ========================= */
+
+        #closeCard {
+
+            margin-top: 20px;
+
+            font-size: 18px;
+
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
+
     <h1>🎲 視力保健大富翁</h1>
+
 
     <div class="board">
 
+
         <!-- 第一排 -->
+
         <div class="cell" id="cell0">
-            起點
-            <span class="player" id="player">🧍</span>
+
+            0<br>起點
+
+            <span class="player">🧍</span>
+
         </div>
 
-        <div class="cell" id="cell1">1<br>休息一下</div>
-        <div class="cell" id="cell2">2<br>手機</div>
-        <div class="cell" id="cell3">3<br>閱讀</div>
-        <div class="cell" id="cell4">4<br>休息站</div>
+
+        <div class="cell" id="cell1">
+
+            1<br>休息
+
+        </div>
+
+
+        <div class="cell event-cell" id="cell2">
+
+            2<br>🎴 事件格
+
+        </div>
+
+
+        <div class="cell" id="cell3">
+
+            3<br>閱讀
+
+        </div>
+
+
+        <div class="cell quiz-cell" id="cell4">
+
+            4<br>❓ 問答格
+
+        </div>
+
+
+        <div class="cell" id="cell5">
+
+            5<br>戶外活動
+
+        </div>
+
+
+        <div class="cell event-cell" id="cell6">
+
+            6<br>🎴 事件格
+
+        </div>
+
 
         <!-- 第二排 -->
-        <div class="cell" id="cell15">15<br>戶外活動</div>
 
-        <div class="center">
-            👁️<br>
-            視力保健
+        <div class="cell event-cell" id="cell23">
+
+            23<br>🎴 事件格
+
         </div>
 
-        <div class="cell" id="cell5">5<br>平板</div>
+
+        <div class="center">
+
+            👁️<br>
+
+            視力保健
+
+        </div>
+
+
+        <div class="cell quiz-cell" id="cell7">
+
+            7<br>❓ 問答格
+
+        </div>
+
 
         <!-- 第三排 -->
-        <div class="cell" id="cell14">14<br>睡眠</div>
-        <div class="cell" id="cell6">6<br>3C</div>
+
+        <div class="cell" id="cell22">
+
+            22<br>休息一下
+
+        </div>
+
+
+        <div class="cell" id="cell8">
+
+            8<br>閱讀
+
+        </div>
+
 
         <!-- 第四排 -->
-        <div class="cell" id="cell13">13<br>眼睛休息</div>
-        <div class="cell" id="cell7">7<br>考試</div>
+
+        <div class="cell quiz-cell" id="cell21">
+
+            21<br>❓ 問答格
+
+        </div>
+
+
+        <div class="cell" id="cell9">
+
+            9<br>睡眠
+
+        </div>
+
 
         <!-- 第五排 -->
-        <div class="cell" id="cell12">12<br>健康檢查</div>
-        <div class="cell" id="cell11">11<br>熬夜</div>
-        <div class="cell" id="cell10">10<br>護眼</div>
-        <div class="cell" id="cell9">9<br>用眼過度</div>
-        <div class="cell" id="cell8">8<br>休息</div>
+
+        <div class="cell event-cell" id="cell20">
+
+            20<br>🎴 事件格
+
+        </div>
+
+
+        <div class="cell" id="cell10">
+
+            10<br>3C
+
+        </div>
+
+
+        <!-- 第六排 -->
+
+        <div class="cell quiz-cell" id="cell19">
+
+            19<br>❓ 問答格
+
+        </div>
+
+
+        <div class="cell" id="cell11">
+
+            11<br>休息
+
+        </div>
+
+
+        <!-- 第七排 -->
+
+        <div class="cell event-cell" id="cell18">
+
+            18<br>🎴 事件格
+
+        </div>
+
+
+        <div class="cell" id="cell17">
+
+            17<br>健康檢查
+
+        </div>
+
+
+        <div class="cell quiz-cell" id="cell16">
+
+            16<br>❓ 問答格
+
+        </div>
+
+
+        <div class="cell" id="cell15">
+
+            15<br>戶外活動
+
+        </div>
+
+
+        <div class="cell event-cell" id="cell14">
+
+            14<br>🎴 事件格
+
+        </div>
+
+
+        <div class="cell" id="cell13">
+
+            13<br>休息
+
+        </div>
+
+
+        <div class="cell quiz-cell" id="cell12">
+
+            12<br>❓ 問答格
+
+        </div>
+
 
     </div>
 
-    <p id="diceResult">點擊按鈕擲骰子</p>
 
-    <p id="health">❤️ 視力健康：100</p>
+    <p id="diceResult">
 
-    <button onclick="rollDice()">🎲 擲骰子</button>
+        點擊按鈕擲骰子
+
+    </p>
+
+
+    <button onclick="rollDice()">
+
+        🎲 擲骰子
+
+    </button>
+
+
+
+    <!-- =========================
+         卡片
+         ========================= -->
+
+    <div id="cardOverlay">
+
+        <div id="card">
+
+
+            <div id="cardTitle">
+
+                🎴 卡片
+
+            </div>
+
+
+            <div id="cardContent">
+
+            </div>
+
+
+            <!-- 問答選項 -->
+
+            <div id="quizOptions">
+
+
+                <button
+                    class="answerButton"
+                    id="answer0"
+                    onclick="checkAnswer(0)">
+                </button>
+
+
+                <button
+                    class="answerButton"
+                    id="answer1"
+                    onclick="checkAnswer(1)">
+                </button>
+
+
+                <button
+                    class="answerButton"
+                    id="answer2"
+                    onclick="checkAnswer(2)">
+                </button>
+
+
+                <button
+                    class="answerButton"
+                    id="answer3"
+                    onclick="checkAnswer(3)">
+                </button>
+
+
+                <div id="quizResult"></div>
+
+
+            </div>
+
+
+            <button
+                id="closeCard"
+                onclick="closeCard()">
+
+                關閉卡片
+
+            </button>
+
+
+        </div>
+
+    </div>
+
+
 
     <script>
 
+
+        // =========================
+        // 玩家位置
+        // =========================
+
         let position = 0;
-        let health = 100;
+
+
+        // =========================
+        // 事件卡
+        // =========================
+
+        let eventCards = [
+
+            "📱 你滑手機滑了很久，眼睛開始疲勞。",
+
+            "🌙 昨天熬夜追劇，今天眼睛感覺很酸。",
+
+            "🌳 你今天到戶外活動，讓眼睛好好休息了一下。",
+
+            "👀 你發現自己看東西時常常瞇眼睛，決定找時間檢查視力。",
+
+            "💤 你今天早早睡覺，讓眼睛獲得充分休息。",
+
+            "💻 使用電腦一段時間後，你記得起身休息。",
+
+            "📖 閱讀時保持適當距離，眼睛比較不容易疲勞。",
+
+            "☀️ 今天陽光很好，你戴上帽子或太陽眼鏡保護眼睛。"
+
+        ];
+
+
+        // =========================
+        // 問答卡
+        // =========================
+
+        let quizCards = [
+
+
+            {
+
+                question:
+                    "看書時，眼睛和書本應保持適當距離，通常建議約多少？",
+
+                options: [
+
+                    "10 公分",
+
+                    "20 公分",
+
+                    "35～40 公分",
+
+                    "70 公分"
+
+                ],
+
+                answer: 2
+
+            },
+
+
+            {
+
+                question:
+                    "長時間使用 3C 產品時，應該怎麼做？",
+
+                options: [
+
+                    "一直盯著螢幕",
+
+                    "適時讓眼睛休息",
+
+                    "把螢幕拿得更近",
+
+                    "關燈繼續使用"
+
+                ],
+
+                answer: 1
+
+            },
+
+
+            {
+
+                question:
+                    "增加戶外活動時間，對兒童青少年的近視預防有幫助嗎？",
+
+                options: [
+
+                    "有幫助",
+
+                    "完全沒有幫助",
+
+                    "只在晚上有幫助",
+
+                    "一定會讓視力變好"
+
+                ],
+
+                answer: 0
+
+            },
+
+
+            {
+
+                question:
+                    "以下哪一種行為比較不利於眼睛健康？",
+
+                options: [
+
+                    "適度休息",
+
+                    "保持適當閱讀距離",
+
+                    "在黑暗環境長時間滑手機",
+
+                    "到戶外活動"
+
+                ],
+
+                answer: 2
+
+            },
+
+
+            {
+
+                question:
+                    "如果發現視力突然變差，應該怎麼做？",
+
+                options: [
+
+                    "繼續忍耐",
+
+                    "把手機字體調小",
+
+                    "接受專業檢查",
+
+                    "多看手機"
+
+                ],
+
+                answer: 2
+
+            },
+
+
+            {
+
+                question:
+                    "長時間使用電腦時，可以偶爾看向遠處讓眼睛休息嗎？",
+
+                options: [
+
+                    "可以",
+
+                    "不可以",
+
+                    "只有晚上可以",
+
+                    "只有戴眼鏡才可以"
+
+                ],
+
+                answer: 0
+
+            }
+
+        ];
+
+
+        // 目前的問答
+
+        let currentQuiz = null;
+
+
+
+        // =========================
+        // 擲骰子
+        // =========================
 
         function rollDice() {
 
-            // 隨機骰子 1～6
-            let dice = Math.floor(Math.random() * 6) + 1;
+
+            let dice =
+                Math.floor(Math.random() * 6) + 1;
+
 
             document.getElementById("diceResult").textContent =
                 "你擲出了 " + dice + " 點！";
 
-            // 計算新位置
-            position = position + dice;
 
-            // 繞一圈後回到起點
-            if (position >= 16) {
-                position = position - 16;
+            position =
+                position + dice;
+
+
+            if (position >= 24) {
+
+                position =
+                    position - 24;
+
             }
 
-            // 把棋子從原本的位置移除
-            for (let i = 0; i < 16; i++) {
-                let cell = document.getElementById("cell" + i);
+
+            // 移除原本棋子
+
+            for (let i = 0; i < 24; i++) {
+
+
+                let cell =
+                    document.getElementById("cell" + i);
+
 
                 if (cell) {
-                    cell.innerHTML = cell.innerHTML.replace(
-                        '<span class="player" id="player">🧍</span>',
-                        ""
-                    );
+
+
+                    let player =
+                        cell.querySelector(".player");
+
+
+                    if (player) {
+
+                        player.remove();
+
+                    }
+
                 }
+
             }
 
-            // 把棋子放到新位置
+
+            // 放到新位置
+
             document.getElementById("cell" + position).innerHTML +=
-                '<span class="player" id="player">🧍</span>';
+                '<span class="player">🧍</span>';
 
-            // 更新健康值
-            updateHealth();
-            
-            showEvent();
+
+            // 判斷格子
+
+            checkCell();
+
         }
 
-        function updateHealth() {
 
-            if (position === 2 || position === 5) {
-                health -= 5;
+
+        // =========================
+        // 判斷格子
+        // =========================
+
+        function checkCell() {
+
+
+            let cell =
+                document.getElementById("cell" + position);
+
+
+            if (!cell) {
+
+                return;
+
             }
 
-            if (position === 11 || position === 9) {
-                health -= 10;
+
+            // 事件格
+
+            if (
+                cell.classList.contains("event-cell")
+            ) {
+
+                drawEventCard();
+
             }
 
-            if (position === 15 || position === 13) {
-                health += 5;
+
+            // 問答格
+
+            else if (
+                cell.classList.contains("quiz-cell")
+            ) {
+
+                drawQuizCard();
+
             }
 
-            if (position === 12) {
-                health += 10;
-            }
 
-            // 健康值最高100，最低0
-            if (health > 100) {
-                health = 100;
-            }
-
-            if (health < 0) {
-                health = 0;
-            }
-
-            document.getElementById("health").textContent =
-                "❤️ 視力健康：" + health;
         }
-        
-function showEvent() {
 
-    let eventText = "";
 
-    if (position === 2) {
-        eventText = "📱 你長時間使用手機，眼睛感到疲勞！";
-    }
 
-    if (position === 5) {
-        eventText = "📱 長時間使用平板，記得讓眼睛休息一下！";
-    }
+        // =========================
+        // 抽事件卡
+        // =========================
 
-    if (position === 9) {
-        eventText = "👀 用眼過度！眼睛需要休息了！";
-    }
+        function drawEventCard() {
 
-    if (position === 11) {
-        eventText = "🌙 熬夜會讓眼睛很疲累，早點睡吧！";
-    }
 
-    if (position === 13) {
-        eventText = "😌 讓眼睛休息一下，視力健康 +5！";
-    }
+            let randomIndex =
+                Math.floor(
+                    Math.random() * eventCards.length
+                );
 
-    if (position === 15) {
-        eventText = "🌳 去戶外活動吧！眼睛獲得休息！";
-    }
 
-    if (position === 12) {
-        eventText = "🏥 定期進行視力檢查，有助於維持眼睛健康！";
-    }
+            let card =
+                eventCards[randomIndex];
 
-    if (eventText !== "") {
-        alert(eventText);
-    }
 
-}
+            // 卡片標題
+
+            document.getElementById("cardTitle").textContent =
+                "🎴 事件";
+
+
+            // 卡片內容
+
+            document.getElementById("cardContent").textContent =
+                card;
+
+
+            // 隱藏問答選項
+
+            document.getElementById("quizOptions").style.display =
+                "none";
+
+
+            // 顯示卡片
+
+            document.getElementById("cardOverlay").style.display =
+                "flex";
+
+        }
+
+
+
+        // =========================
+        // 抽問答卡
+        // =========================
+
+        function drawQuizCard() {
+
+
+            let randomIndex =
+                Math.floor(
+                    Math.random() * quizCards.length
+                );
+
+
+            currentQuiz =
+                quizCards[randomIndex];
+
+
+            // 卡片標題
+
+            document.getElementById("cardTitle").textContent =
+                "❓ 問答";
+
+
+            // 題目
+
+            document.getElementById("cardContent").textContent =
+                currentQuiz.question;
+
+
+            // 顯示問答區
+
+            document.getElementById("quizOptions").style.display =
+                "block";
+
+
+            // 清除上一題結果
+
+            document.getElementById("quizResult").textContent =
+                "";
+
+
+            // 顯示四個選項
+
+            for (let i = 0; i < 4; i++) {
+
+
+                let button =
+                    document.getElementById("answer" + i);
+
+
+                button.style.display =
+                    "block";
+
+
+                button.textContent =
+                    String.fromCharCode(65 + i) +
+                    ". " +
+                    currentQuiz.options[i];
+
+            }
+
+
+            // 顯示卡片
+
+            document.getElementById("cardOverlay").style.display =
+                "flex";
+
+        }
+
+
+
+        // =========================
+        // 判斷答案
+        // =========================
+
+        function checkAnswer(answerIndex) {
+
+
+            if (
+                answerIndex === currentQuiz.answer
+            ) {
+
+
+                document.getElementById("quizResult").textContent =
+                    "🎉 答對了！";
+
+
+            }
+
+            else {
+
+
+                document.getElementById("quizResult").textContent =
+                    "❌ 答錯了！";
+
+
+            }
+
+
+            // 選完後隱藏選項
+
+            for (let i = 0; i < 4; i++) {
+
+                document.getElementById("answer" + i).style.display =
+                    "none";
+
+            }
+
+        }
+
+
+
+        // =========================
+        // 關閉卡片
+        // =========================
+
+        function closeCard() {
+
+
+            document.getElementById("cardOverlay").style.display =
+                "none";
+
+
+            document.getElementById("quizResult").textContent =
+                "";
+
+        }
+
+
     </script>
 
+
 </body>
+
 </html>
