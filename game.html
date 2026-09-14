@@ -1,1821 +1,2166 @@
-```html
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>視力保健大富翁</title>
 
 <style>
-body{
-    font-family:sans-serif;
-    text-align:center;
-    background:#f5f5f5;
+* {
+  box-sizing: border-box;
 }
 
-h1{margin-top:30px;}
-
-#setupScreen{
-    margin:40px auto;
-    width:450px;
-    background:white;
-    padding:30px;
-    border-radius:20px;
-    box-shadow:0 5px 15px rgba(0,0,0,.15);
+body {
+  margin: 0;
+  font-family: "Noto Sans TC", sans-serif;
+  background: #f5f8ff;
+  color: #333;
 }
 
-.playerCountButton,
-.playerSetting button{
-    padding:9px 15px;
-    margin:5px;
-    font-size:16px;
-    border:2px solid #aaa;
-    border-radius:10px;
-    background:white;
-    cursor:pointer;
+h1 {
+  text-align: center;
+  margin: 20px 0;
+  color: #4c6faf;
 }
 
-.playerCountButton.selected,
-.playerSetting button.selected{
-    background:#dcedc8;
-    border-color:#689f38;
-    font-weight:bold;
+/* =========================
+   設定畫面
+========================= */
+
+#setup {
+  width: 90%;
+  max-width: 650px;
+  margin: 30px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-#startGameButton{
-    margin-top:20px;
-    padding:12px 25px;
-    font-size:18px;
+#setup h2 {
+  text-align: center;
 }
 
-#gameScreen{display:none;}
-
-#turnInfo{
-    font-size:22px;
-    font-weight:bold;
-    margin:15px;
+.player-setting {
+  margin: 15px 0;
+  padding: 15px;
+  background: #f3f6fc;
+  border-radius: 12px;
 }
 
-#badgeInfo{
-    margin:10px auto;
-    padding:10px;
-    width:600px;
-    background:white;
-    border-radius:12px;
-    font-size:16px;
+.player-setting button {
+  margin-right: 8px;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #dfe7f5;
 }
 
-.board{
-    width:600px;
-    height:600px;
-    margin:25px auto;
-    display:grid;
-    grid-template-columns:repeat(7,1fr);
-    grid-template-rows:repeat(7,1fr);
-    gap:5px;
+.player-setting button.selected {
+  background: #7190c9;
+  color: white;
 }
 
-.cell{
-    background:white;
-    border:2px solid #333;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    font-size:14px;
-    font-weight:bold;
-    position:relative;
+#startGame {
+  width: 100%;
+  padding: 13px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #6685c5;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
 }
 
-.event-cell{
-    background:#fff3e0;
+/* =========================
+   遊戲區
+========================= */
+
+#game {
+  display: none;
 }
 
-.center{
-    grid-column:2 / 7;
-    grid-row:2 / 7;
-    background:#e8f5e9;
-    border:2px solid #333;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:28px;
+.game-layout {
+  width: 95%;
+  max-width: 1250px;
+  margin: auto;
+
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
 }
 
-.players{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:2px;
+/* =========================
+   棋盤
+========================= */
+
+#board {
+  width: 700px;
+  height: 700px;
+
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+
+  gap: 5px;
+
+  background: #d9e2f2;
+  padding: 5px;
+  border-radius: 15px;
 }
 
-.player{
-    font-size:25px;
+.cell {
+  background: white;
+  border-radius: 8px;
+  min-width: 0;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  font-size: 13px;
+  position: relative;
+  padding: 3px;
 }
 
-#diceResult{
-    font-size:20px;
-    font-weight:bold;
+.event-cell {
+  background: #ffe6b8;
+  border: 2px solid #f0ad4e;
 }
 
-#rollButton{
-    font-size:18px;
-    padding:10px 20px;
+.start-cell {
+  background: #dff3df;
+  border: 2px solid #78b878;
 }
 
-#cardOverlay,
-#winOverlay{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.5);
-    align-items:center;
-    justify-content:center;
-    z-index:1000;
+.center-area {
+  grid-column: 2 / 7;
+  grid-row: 2 / 7;
+
+  background: #edf3ff;
+  border-radius: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  color: #6079a5;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-#card,
-#winCard{
-    width:450px;
-    background:white;
-    border-radius:20px;
-    padding:30px;
-    box-sizing:border-box;
-    box-shadow:0 5px 20px rgba(0,0,0,.3);
+.players {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 3px;
+  font-size: 20px;
 }
 
-#cardTitle{
-    font-size:27px;
-    font-weight:bold;
-    margin-bottom:20px;
+/* =========================
+   右側資訊
+========================= */
+
+.side-panel {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-#cardContent{
-    font-size:19px;
-    line-height:1.6;
-    margin-bottom:20px;
+.info-box {
+  background: white;
+  border-radius: 15px;
+  padding: 18px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
 }
 
-.answerButton{
-    display:block;
-    width:100%;
-    margin:10px 0;
-    padding:12px;
-    font-size:16px;
-    text-align:left;
-    border:2px solid #aaa;
-    border-radius:10px;
-    background:white;
-    cursor:pointer;
+.info-box h2 {
+  margin-top: 0;
+  color: #526fa9;
+  font-size: 21px;
 }
 
-#quizResult{
-    font-size:21px;
-    font-weight:bold;
-    margin-top:15px;
+.info-box h3 {
+  margin-bottom: 5px;
+  color: #657fb2;
 }
 
-#closeCard{
-    margin-top:20px;
-    padding:10px 20px;
-    font-size:17px;
+.info-box ul {
+  padding-left: 22px;
+  line-height: 1.7;
+  margin-top: 5px;
 }
 
-#winCard h2{
-    font-size:30px;
+.turn-box {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  background: #eef4ff;
 }
 
-#winBadges{
-    font-size:20px;
-    line-height:2;
-    margin:20px 0;
+#playerInfo {
+  line-height: 1.7;
 }
 
-#restartButton{
-    padding:12px 25px;
-    font-size:18px;
+.player-card {
+  margin: 8px 0;
+  padding: 9px;
+  background: #f5f7fc;
+  border-radius: 10px;
+}
+
+.player-card.current {
+  border: 2px solid #6685c5;
+  background: #eaf0ff;
+}
+
+.badges {
+  font-size: 16px;
+}
+
+/* =========================
+   骰子
+========================= */
+
+#diceArea {
+  margin: 20px auto;
+  text-align: center;
+}
+
+#rollDice {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 10px;
+  background: #6685c5;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+#rollDice:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+#diceResult {
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* =========================
+   卡片彈窗
+========================= */
+
+#cardOverlay {
+  display: none;
+
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,0.45);
+
+  align-items: center;
+  justify-content: center;
+
+  z-index: 100;
+}
+
+.card-box {
+  width: 90%;
+  max-width: 500px;
+  background: white;
+
+  padding: 25px;
+  border-radius: 20px;
+
+  box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+
+  text-align: center;
+}
+
+.card-box h2 {
+  color: #526fa9;
+}
+
+#cardText {
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+
+.quiz-option {
+  width: 100%;
+  margin: 7px 0;
+  padding: 11px;
+
+  border: 1px solid #cbd5e8;
+  border-radius: 10px;
+
+  background: #f5f7fc;
+  cursor: pointer;
+
+  font-size: 16px;
+}
+
+.quiz-option:hover {
+  background: #e8eefb;
+}
+
+.quiz-option:disabled {
+  cursor: default;
+}
+
+#closeCard {
+  margin-top: 15px;
+  padding: 10px 25px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #6685c5;
+  color: white;
+
+  cursor: pointer;
+}
+
+/* =========================
+   勝利畫面
+========================= */
+
+#winOverlay {
+  display: none;
+
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,0.55);
+
+  align-items: center;
+  justify-content: center;
+
+  z-index: 200;
+}
+
+.win-box {
+  width: 90%;
+  max-width: 500px;
+
+  background: white;
+  padding: 30px;
+
+  border-radius: 20px;
+  text-align: center;
+}
+
+.win-box h2 {
+  font-size: 30px;
+  color: #e19b38;
+}
+
+#restartGame {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 10px;
+
+  background: #6685c5;
+  color: white;
+
+  font-size: 17px;
+  cursor: pointer;
+}
+
+/* =========================
+   手機版
+========================= */
+
+@media (max-width: 900px) {
+
+  .game-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #board {
+    width: 95vw;
+    height: 95vw;
+    max-width: 650px;
+    max-height: 650px;
+  }
+
+  .side-panel {
+    width: 95%;
+    max-width: 650px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<h1>🎲 視力保健大富翁</h1>
+<h1>👁️ 視力保健大富翁</h1>
 
-<!-- ==================== 設定 ==================== -->
+<!-- =========================
+     遊戲設定
+========================= -->
 
-<div id="setupScreen">
+<div id="setup">
 
-    <h2>🎮 遊戲設定</h2>
+  <h2>遊戲設定</h2>
 
-    <p>選擇遊戲人數</p>
+  <p>請選擇遊戲人數：</p>
 
-    <button class="playerCountButton"
-            onclick="selectPlayerCount(2)">
-        2 人
-    </button>
+  <div>
+    <button class="player-count selected" data-count="2">2 人</button>
+    <button class="player-count" data-count="3">3 人</button>
+    <button class="player-count" data-count="4">4 人</button>
+  </div>
 
-    <button class="playerCountButton"
-            onclick="selectPlayerCount(3)">
-        3 人
-    </button>
+  <div id="playerSettings"></div>
 
-    <button class="playerCountButton"
-            onclick="selectPlayerCount(4)">
-        4 人
-    </button>
-
-    <div id="playerSettings"></div>
-
-    <button id="startGameButton"
-            onclick="startGame()"
-            style="display:none;">
-        🎮 開始遊戲
-    </button>
+  <button id="startGame">開始遊戲</button>
 
 </div>
 
 
-<!-- ==================== 遊戲 ==================== -->
+<!-- =========================
+     遊戲本體
+========================= -->
 
-<div id="gameScreen">
+<div id="game">
 
-    <div id="turnInfo"></div>
+  <div class="game-layout">
 
-    <div id="badgeInfo"></div>
+    <!-- 棋盤 -->
+    <div>
 
-    <div class="board">
+      <div id="board">
 
-        <div class="cell" id="cell0">
-            0<br>起點
-            <div class="players"></div>
+        <div class="cell start-cell" id="cell0">
+          0<br>🏁 起點
+          <div class="players"></div>
         </div>
 
         <div class="cell" id="cell1">
-            1<br>休息
-            <div class="players"></div>
+          1<br>休息區
+          <div class="players"></div>
         </div>
 
         <div class="cell event-cell" id="cell2">
-            2<br>🎴 事件格
-            <div class="players"></div>
+          2<br>🎴 事件格
+          <div class="players"></div>
         </div>
 
         <div class="cell" id="cell3">
-            3<br>閱讀
-            <div class="players"></div>
+          3<br>喝水
+          <div class="players"></div>
         </div>
 
         <div class="cell event-cell" id="cell4">
-            4<br>🎴 事件格
-            <div class="players"></div>
+          4<br>🎴 事件格
+          <div class="players"></div>
         </div>
 
         <div class="cell" id="cell5">
-            5<br>戶外活動
-            <div class="players"></div>
+          5<br>眺望遠方
+          <div class="players"></div>
         </div>
 
         <div class="cell event-cell" id="cell6">
-            6<br>🎴 事件格
-            <div class="players"></div>
+          6<br>🎴 事件格
+          <div class="players"></div>
         </div>
 
-        <div class="cell event-cell" id="cell23">
-            23<br>🎴 事件格
-            <div class="players"></div>
-        </div>
-
-        <div class="center">
-            👁️<br>視力保健
-        </div>
-
-        <div class="cell" id="cell7">
-            7<br>閱讀
-            <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell22">
-            22<br>休息一下
-            <div class="players"></div>
+        <div class="cell event-cell" id="cell7">
+          7<br>🎴 事件格
+          <div class="players"></div>
         </div>
 
         <div class="cell" id="cell8">
-            8<br>閱讀
-            <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell21">
-            21<br>🎴 事件格
-            <div class="players"></div>
+          8<br>眨眼
+          <div class="players"></div>
         </div>
 
         <div class="cell" id="cell9">
-            9<br>睡眠
-            <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell20">
-            20<br>🎴 事件格
-            <div class="players"></div>
+          9<br>閱讀
+          <div class="players"></div>
         </div>
 
         <div class="cell" id="cell10">
-            10<br>3C
-            <div class="players"></div>
+          10<br>休息
+          <div class="players"></div>
         </div>
 
-        <div class="cell event-cell" id="cell19">
-            19<br>🎴 事件格
-            <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell11">
-            11<br>休息
-            <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell18">
-            18<br>🎴 事件格
-            <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell17">
-            17<br>健康檢查
-            <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell16">
-            16<br>🎴 事件格
-            <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell15">
-            15<br>戶外活動
-            <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell14">
-            14<br>🎴 事件格
-            <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell13">
-            13<br>休息
-            <div class="players"></div>
+        <div class="cell event-cell" id="cell11">
+          11<br>🎴 事件格
+          <div class="players"></div>
         </div>
 
         <div class="cell event-cell" id="cell12">
-            12<br>🎴 事件格
-            <div class="players"></div>
+          12<br>🎴 事件格
+          <div class="players"></div>
         </div>
+
+        <div class="cell" id="cell13">
+          13<br>戶外活動
+          <div class="players"></div>
+        </div>
+
+        <div class="cell event-cell" id="cell14">
+          14<br>🎴 事件格
+          <div class="players"></div>
+        </div>
+
+        <div class="cell event-cell" id="cell15">
+          15<br>🎴 事件格
+          <div class="players"></div>
+        </div>
+
+        <div class="cell event-cell" id="cell16">
+          16<br>🎴 事件格
+          <div class="players"></div>
+        </div>
+
+        <div class="cell" id="cell17">
+          17<br>護眼操
+          <div class="players"></div>
+        </div>
+
+        <div class="cell event-cell" id="cell18">
+          18<br>🎴 事件格
+          <div class="players"></div>
+        </div>
+
+        <div class="cell event-cell" id="cell19">
+          19<br>🎴 事件格
+          <div class="players"></div>
+        </div>
+
+        <div class="cell event-cell" id="cell20">
+          20<br>🎴 事件格
+          <div class="players"></div>
+        </div>
+
+        <div class="cell event-cell" id="cell21">
+          21<br>🎴 事件格
+          <div class="players"></div>
+        </div>
+
+        <div class="cell" id="cell22">
+          22<br>戶外活動
+          <div class="players"></div>
+        </div>
+
+        <div class="cell event-cell" id="cell23">
+          23<br>🎴 事件格
+          <div class="players"></div>
+        </div>
+
+        <div class="center-area">
+          👁️<br>
+          視力保健大富翁
+        </div>
+
+      </div>
+
+      <div id="diceArea">
+
+        <button id="rollDice">🎲 擲骰子</button>
+
+        <div id="diceResult"></div>
+
+      </div>
 
     </div>
 
-    <p id="diceResult">點擊按鈕擲骰子</p>
 
-    <button id="rollButton" onclick="rollDice()">
-        🎲 擲骰子
-    </button>
+    <!-- =========================
+         右側資訊欄
+    ========================= -->
+
+    <div class="side-panel">
+
+      <div class="info-box turn-box">
+        現在輪到：<span id="currentTurn"></span>
+      </div>
+
+
+      <!-- 玩法＆獲勝條件 -->
+
+      <div class="info-box">
+
+        <h2>📖 玩法 & 獲勝條件</h2>
+
+        <h3>🎲 玩法</h3>
+
+        <ul>
+          <li>輪流擲骰子，依照點數前進。</li>
+          <li>走到 🎴 事件格時，會隨機抽取事件卡或問答卡。</li>
+          <li>答對問答可獲得該類別徽章。</li>
+          <li>答錯不會扣除徽章。</li>
+          <li>事件卡可能讓你前進、後退或休息。</li>
+          <li>機器人會自動擲骰及進行答題。</li>
+        </ul>
+
+        <h3>🏆 獲勝條件</h3>
+
+        <ul>
+          <li>🌟 四種徽章各獲得至少 1 枚。</li>
+          <li>🏅 任一類別徽章累積至 4 枚。</li>
+        </ul>
+
+        <p>
+          <strong>符合任一條件即可獲勝！</strong>
+        </p>
+
+      </div>
+
+
+      <!-- 玩家資訊 -->
+
+      <div class="info-box">
+
+        <h2>👥 玩家資訊</h2>
+
+        <div id="playerInfo"></div>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
 
 
-<!-- ==================== 卡片 ==================== -->
+<!-- =========================
+     卡片視窗
+========================= -->
 
 <div id="cardOverlay">
 
-    <div id="card">
+  <div class="card-box">
 
-        <div id="cardTitle"></div>
+    <h2 id="cardTitle"></h2>
 
-        <div id="cardContent"></div>
+    <div id="cardText"></div>
 
-        <div id="quizOptions">
+    <div id="quizOptions"></div>
 
-            <button class="answerButton"
-                    id="answer0"
-                    onclick="checkAnswer(0)">
-            </button>
+    <button id="closeCard">關閉</button>
 
-            <button class="answerButton"
-                    id="answer1"
-                    onclick="checkAnswer(1)">
-            </button>
-
-            <button class="answerButton"
-                    id="answer2"
-                    onclick="checkAnswer(2)">
-            </button>
-
-            <button class="answerButton"
-                    id="answer3"
-                    onclick="checkAnswer(3)">
-            </button>
-
-            <div id="quizResult"></div>
-
-        </div>
-
-        <button id="closeCard"
-                onclick="closeCard()">
-            關閉卡片
-        </button>
-
-    </div>
+  </div>
 
 </div>
 
 
-<!-- ==================== 勝利畫面 ==================== -->
+<!-- =========================
+     勝利視窗
+========================= -->
 
 <div id="winOverlay">
 
-    <div id="winCard">
+  <div class="win-box">
 
-        <h2>🎉 遊戲結束！</h2>
+    <h2>🏆 遊戲結束！</h2>
 
-        <h3 id="winnerName"></h3>
+    <div id="winnerText"></div>
 
-        <div id="winBadges"></div>
+    <div id="winnerBadges"></div>
 
-        <p>恭喜獲得勝利！</p>
+    <br>
 
-        <button id="restartButton"
-                onclick="location.reload()">
-            🔄 重新遊戲
-        </button>
+    <button id="restartGame">重新開始</button>
 
-    </div>
+  </div>
 
 </div>
 
 
 <script>
 
-/* ==================================================
-   基本設定
-   ================================================== */
+/* =========================================================
+   玩家設定
+========================================================= */
 
-let totalPlayers = 0;
-let currentPlayerIndex = 0;
+const playerIcons = ["🧍", "🐱", "🐰", "🐻"];
+
+let playerCount = 2;
+
 let players = [];
+
+let currentPlayerIndex = 0;
+
+let gameOver = false;
+
 let currentQuiz = null;
-let gameEnded = false;
 
-const playerIcons = [
-    "🧍",
-    "🐱",
-    "🐰",
-    "🐻"
+let moving = false;
+
+
+/* =========================================================
+   徽章類別
+========================================================= */
+
+const badgeTypes = [
+  {
+    name: "視力保健",
+    icon: "👁️"
+  },
+  {
+    name: "3C使用",
+    icon: "📱"
+  },
+  {
+    name: "閱讀習慣",
+    icon: "📖"
+  },
+  {
+    name: "戶外生活",
+    icon: "🌳"
+  }
 ];
 
 
-/* ==================================================
-   四種徽章
-   ================================================== */
+/* =========================================================
+   玩家設定畫面
+========================================================= */
 
-const badgeNames = [
-    "👁️ 視力保健",
-    "📱 3C使用",
-    "📖 閱讀習慣",
-    "🌳 戶外生活"
-];
+function renderPlayerSettings() {
 
+  const container = document.getElementById("playerSettings");
 
-/* ==================================================
-   選擇人數
-   ================================================== */
+  container.innerHTML = "";
 
-function selectPlayerCount(count){
+  for (let i = 1; i < playerCount; i++) {
 
-    totalPlayers = count;
+    const div = document.createElement("div");
 
-    document.querySelectorAll(
-        ".playerCountButton"
-    ).forEach(button=>{
-        button.classList.remove("selected");
+    div.className = "player-setting";
+
+    div.innerHTML = `
+      <strong>${playerIcons[i]} 玩家 ${i + 1}</strong><br><br>
+
+      <button
+        class="type-btn selected"
+        data-player="${i}"
+        data-type="bot">
+        🤖 機器人
+      </button>
+
+      <button
+        class="type-btn"
+        data-player="${i}"
+        data-type="human">
+        🧍 玩家
+      </button>
+    `;
+
+    container.appendChild(div);
+  }
+
+  document.querySelectorAll(".type-btn").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const player = button.dataset.player;
+
+      document
+        .querySelectorAll(`.type-btn[data-player="${player}"]`)
+        .forEach(btn => btn.classList.remove("selected"));
+
+      button.classList.add("selected");
+
     });
 
-    document.querySelectorAll(
-        ".playerCountButton"
-    )[count-2].classList.add("selected");
+  });
 
-    const settings =
-        document.getElementById("playerSettings");
-
-    settings.innerHTML = "";
-
-    players = [];
-
-    // 玩家1固定真人
-    players.push({
-        name:"玩家1",
-        type:"human",
-        position:0,
-        icon:playerIcons[0],
-        badges:[0,0,0,0],
-        rest:false
-    });
-
-    const p1 =
-        document.createElement("div");
-
-    p1.className="playerSetting";
-    p1.innerHTML="玩家1 👤 真人（固定）";
-
-    settings.appendChild(p1);
-
-
-    // 玩家2～4
-    for(let i=2;i<=count;i++){
-
-        players.push({
-            name:"玩家"+i,
-            type:"bot",
-            position:0,
-            icon:playerIcons[i-1],
-            badges:[0,0,0,0],
-            rest:false
-        });
-
-        const div =
-            document.createElement("div");
-
-        div.className="playerSetting";
-
-        div.innerHTML =
-            "玩家"+i+"："+
-            "<button onclick=\"setPlayerType("+
-            i+",'human',this)\">"+
-            "👤 真人</button>"+
-            "<button onclick=\"setPlayerType("+
-            i+",'bot',this)\">"+
-            "🤖 電腦</button>";
-
-        settings.appendChild(div);
-
-        div.querySelectorAll("button")[1]
-            .classList.add("selected");
-    }
-
-    document.getElementById(
-        "startGameButton"
-    ).style.display="inline-block";
 }
 
 
-/* ==================================================
-   玩家身分
-   ================================================== */
+/* 玩家人數按鈕 */
 
-function setPlayerType(
-    playerNumber,
-    type,
-    button
-){
+document.querySelectorAll(".player-count").forEach(button => {
 
-    players[playerNumber-1].type=type;
+  button.addEventListener("click", () => {
 
-    button.parentElement
-        .querySelectorAll("button")
-        .forEach(b=>{
-            b.classList.remove("selected");
-        });
+    document
+      .querySelectorAll(".player-count")
+      .forEach(btn => btn.classList.remove("selected"));
 
     button.classList.add("selected");
-}
+
+    playerCount = Number(button.dataset.count);
+
+    renderPlayerSettings();
+
+  });
+
+});
 
 
-/* ==================================================
+renderPlayerSettings();
+
+
+/* =========================================================
    開始遊戲
-   ================================================== */
+========================================================= */
 
-function startGame(){
+document.getElementById("startGame").addEventListener("click", () => {
 
-    if(totalPlayers===0)return;
+  players = [];
 
-    document.getElementById(
-        "setupScreen"
-    ).style.display="none";
+  /* 玩家1固定為真人 */
 
-    document.getElementById(
-        "gameScreen"
-    ).style.display="block";
-
-    currentPlayerIndex=0;
-    gameEnded=false;
-
-    updateBoard();
-    updateBadgeInfo();
-    updateTurnInfo();
-}
+  players.push({
+    name: "玩家 1",
+    icon: playerIcons[0],
+    type: "human",
+    position: 0,
+    badges: [0, 0, 0, 0],
+    rest: false
+  });
 
 
-/* ==================================================
-   更新棋盤
-   ================================================== */
+  /* 玩家2～4 */
 
-function updateBoard(){
+  for (let i = 1; i < playerCount; i++) {
 
-    for(let i=0;i<24;i++){
+    const selected = document.querySelector(
+      `.type-btn[data-player="${i}"].selected`
+    );
 
-        const cell =
-            document.getElementById("cell"+i);
+    const type = selected
+      ? selected.dataset.type
+      : "bot";
 
-        if(cell){
-            const area =
-                cell.querySelector(".players");
+    players.push({
 
-            if(area)area.innerHTML="";
-        }
-    }
+      name: `玩家 ${i + 1}`,
 
-    players.forEach(player=>{
+      icon: playerIcons[i],
 
-        const cell =
-            document.getElementById(
-                "cell"+player.position
-            );
+      type: type,
 
-        if(!cell)return;
+      position: 0,
 
-        const area =
-            cell.querySelector(".players");
+      badges: [0, 0, 0, 0],
 
-        const span =
-            document.createElement("span");
+      rest: false
 
-        span.className="player";
-        span.textContent=player.icon;
-        span.title=player.name;
-
-        area.appendChild(span);
-    });
-}
-
-
-/* ==================================================
-   徽章顯示
-   ================================================== */
-
-function updateBadgeInfo(){
-
-    let text="";
-
-    players.forEach(player=>{
-
-        text +=
-            player.icon+" "+
-            player.name+"： ";
-
-        for(let i=0;i<4;i++){
-
-            text +=
-                badgeNames[i]+" ×"+
-                player.badges[i];
-
-            if(i<3)text+="　";
-        }
-
-        text+="<br>";
     });
 
-    document.getElementById(
-        "badgeInfo"
-    ).innerHTML=text;
-}
+  }
 
 
-/* ==================================================
-   回合資訊
-   ================================================== */
+  currentPlayerIndex = 0;
 
-function updateTurnInfo(){
+  gameOver = false;
 
-    if(gameEnded)return;
+  document.getElementById("setup").style.display = "none";
 
-    const player =
-        players[currentPlayerIndex];
+  document.getElementById("game").style.display = "block";
 
-    const icon =
-        player.type==="human"
-        ? "👤"
-        : "🤖";
+  updateBoard();
 
-    document.getElementById(
-        "turnInfo"
-    ).textContent =
-        icon+" "+player.name+" 的回合";
+  updatePlayerInfo();
 
-    const rollButton =
-        document.getElementById("rollButton");
+  updateTurn();
 
-    if(player.type==="human"){
+  setTimeout(checkBotTurn, 800);
 
-        rollButton.disabled=false;
-
-    }else{
-
-        rollButton.disabled=true;
-
-        setTimeout(()=>{
-            if(!gameEnded)rollDice();
-        },1000);
-    }
-}
+});
 
 
-/* ==================================================
-   擲骰子
-   ================================================== */
+/* =========================================================
+   事件格
+========================================================= */
 
-function rollDice(){
-
-    if(gameEnded)return;
-
-    const player =
-        players[currentPlayerIndex];
-
-    const dice =
-        Math.floor(Math.random()*6)+1;
-
-    document.getElementById(
-        "diceResult"
-    ).textContent =
-        player.name+
-        " 擲出了 "+
-        dice+" 點！";
-
-    player.position += dice;
-
-    if(player.position>=24){
-        player.position-=24;
-    }
-
-    updateBoard();
-
-    checkCell();
-}
+const eventCells = [
+  2, 4, 6, 7,
+  12, 14, 16,
+  18, 19, 20, 21, 23
+];
 
 
-/* ==================================================
-   判斷格子
-   ================================================== */
-
-function checkCell(){
-
-    if(gameEnded)return;
-
-    const player =
-        players[currentPlayerIndex];
-
-    const cell =
-        document.getElementById(
-            "cell"+player.position
-        );
-
-    if(
-        cell &&
-        cell.classList.contains("event-cell")
-    ){
-
-        drawCard();
-
-    }else{
-
-        nextTurn();
-
-    }
-}
-
-
-/* ==================================================
+/* =========================================================
    20 張普通事件卡
-   effect:
-   move = 前進
-   back = 後退
-   rest = 休息
-   ================================================== */
+========================================================= */
 
 const eventCards = [
 
-    {
-        text:"📱 你長時間滑手機，眼睛感到疲勞。",
-        effect:"back",
-        value:2
-    },
+  {
+    text: "你今天有乖乖讓眼睛休息，向前前進 2 格！",
+    effect: "move",
+    value: 2
+  },
 
-    {
-        text:"🌙 昨晚熬夜追劇，今天精神不佳。",
-        effect:"back",
-        value:2
-    },
+  {
+    text: "長時間盯著手機，眼睛需要休息。後退 2 格。",
+    effect: "back",
+    value: 2
+  },
 
-    {
-        text:"💻 使用電腦時記得適時休息。",
-        effect:"move",
-        value:2
-    },
+  {
+    text: "你做了護眼操！前進 3 格。",
+    effect: "move",
+    value: 3
+  },
 
-    {
-        text:"🌳 今天到戶外活動，讓眼睛休息了一下。",
-        effect:"move",
-        value:2
-    },
+  {
+    text: "熬夜追劇，精神不佳。後退 3 格。",
+    effect: "back",
+    value: 3
+  },
 
-    {
-        text:"💤 今天早早睡覺，精神很好！",
-        effect:"move",
-        value:3
-    },
+  {
+    text: "你今天有安排戶外活動！前進 2 格。",
+    effect: "move",
+    value: 2
+  },
 
-    {
-        text:"📖 閱讀時保持適當距離。",
-        effect:"move",
-        value:2
-    },
+  {
+    text: "看書時距離太近，眼睛需要休息。後退 1 格。",
+    effect: "back",
+    value: 1
+  },
 
-    {
-        text:"☀️ 外出時戴上帽子遮擋陽光。",
-        effect:"move",
-        value:1
-    },
+  {
+    text: "你記得眨眨眼，讓眼睛休息一下。前進 1 格。",
+    effect: "move",
+    value: 1
+  },
 
-    {
-        text:"👀 發現看東西常常瞇眼睛，決定檢查視力。",
-        effect:"move",
-        value:2
-    },
+  {
+    text: "連續使用 3C 太久，請休息一下。",
+    effect: "rest",
+    value: 0
+  },
 
-    {
-        text:"📱 你躺著滑手機太久。",
-        effect:"back",
-        value:2
-    },
+  {
+    text: "你到戶外活動了一會兒，前進 2 格！",
+    effect: "move",
+    value: 2
+  },
 
-    {
-        text:"🌙 睡前一直使用手機，結果晚睡了。",
-        effect:"back",
-        value:3
-    },
+  {
+    text: "睡眠不足，今天的眼睛很疲累。後退 2 格。",
+    effect: "back",
+    value: 2
+  },
 
-    {
-        text:"🌳 今天和朋友一起到戶外運動。",
-        effect:"move",
-        value:3
-    },
+  {
+    text: "你主動把螢幕拿遠了一點，前進 1 格。",
+    effect: "move",
+    value: 1
+  },
 
-    {
-        text:"💻 使用電腦一段時間後，你主動休息。",
-        effect:"move",
-        value:2
-    },
+  {
+    text: "在昏暗的地方看書，眼睛太辛苦了。後退 2 格。",
+    effect: "back",
+    value: 2
+  },
 
-    {
-        text:"📖 閱讀時保持良好坐姿。",
-        effect:"move",
-        value:1
-    },
+  {
+    text: "你今天有充分休息，前進 2 格。",
+    effect: "move",
+    value: 2
+  },
 
-    {
-        text:"💤 今天睡眠充足，精神狀況良好。",
-        effect:"move",
-        value:2
-    },
+  {
+    text: "休息時間到了，下一回合暫停一次。",
+    effect: "rest",
+    value: 0
+  },
 
-    {
-        text:"📱 你在昏暗的環境中長時間看手機。",
-        effect:"back",
-        value:2
-    },
+  {
+    text: "你完成了戶外活動，前進 3 格！",
+    effect: "move",
+    value: 3
+  },
 
-    {
-        text:"☀️ 今天安排了戶外活動時間。",
-        effect:"move",
-        value:2
-    },
+  {
+    text: "躺著滑手機太久，後退 2 格。",
+    effect: "back",
+    value: 2
+  },
 
-    {
-        text:"😴 昨晚睡眠不足，今天容易揉眼睛。",
-        effect:"back",
-        value:2
-    },
+  {
+    text: "你有記得保持適當閱讀距離，前進 1 格。",
+    effect: "move",
+    value: 1
+  },
 
-    {
-        text:"👓 發現視力問題後，你決定接受專業檢查。",
-        effect:"move",
-        value:3
-    },
+  {
+    text: "眼睛太累了，先休息一下吧。",
+    effect: "rest",
+    value: 0
+  },
 
-    {
-        text:"🧘 你讓眼睛充分休息了一段時間。",
-        effect:"rest",
-        value:0
-    },
+  {
+    text: "今天的護眼習慣不錯，前進 2 格！",
+    effect: "move",
+    value: 2
+  },
 
-    {
-        text:"💤 今天身體有些疲累，決定休息一回合。",
-        effect:"rest",
-        value:0
-    }
+  {
+    text: "長時間近距離用眼，後退 1 格。",
+    effect: "back",
+    value: 1
+  }
 
 ];
 
 
-/* ==================================================
+/* =========================================================
    40 張問答卡
-   四種類型 × 10
-   ================================================== */
+   每種類別 10 張
+========================================================= */
 
 const quizCards = [
 
-    /* ===== 視力保健 ===== */
+  /* ===== 👁️ 視力保健 10 ===== */
 
-    {
-        type:0,
-        question:"如果發現視力突然變差，應該怎麼做？",
-        options:[
-            "繼續忍耐",
-            "把手機字體調小",
-            "接受專業檢查",
-            "多看手機"
-        ],
-        answer:2
-    },
+  {
+    type: 0,
+    question: "閱讀或使用 3C 一段時間後，應該怎麼做？",
+    options: [
+      "繼續盯著螢幕",
+      "讓眼睛適度休息",
+      "把螢幕拿更近",
+      "關燈繼續使用"
+    ],
+    answer: 1
+  },
 
-    {
-        type:0,
-        question:"戶外活動對兒童青少年的近視預防有幫助嗎？",
-        options:[
-            "有幫助",
-            "完全沒有",
-            "只有晚上有幫助",
-            "一定會讓視力恢復"
-        ],
-        answer:0
-    },
+  {
+    type: 0,
+    question: "如果眼睛感到疲勞，較適合的做法是？",
+    options: [
+      "休息一下",
+      "繼續用眼",
+      "揉眼睛",
+      "增加螢幕亮度"
+    ],
+    answer: 0
+  },
 
-    {
-        type:0,
-        question:"如果眼睛長時間感到疲勞，可以怎麼做？",
-        options:[
-            "繼續盯著螢幕",
-            "讓眼睛適度休息",
-            "把螢幕靠更近",
-            "關燈使用手機"
-        ],
-        answer:1
-    },
+  {
+    type: 0,
+    question: "保持良好的用眼習慣可以幫助？",
+    options: [
+      "減少眼睛負擔",
+      "讓眼睛不用休息",
+      "保證永遠不近視",
+      "讓視力立刻變好"
+    ],
+    answer: 0
+  },
 
-    {
-        type:0,
-        question:"定期接受視力檢查有什麼好處？",
-        options:[
-            "可以了解視力狀況",
-            "可以不用戴眼鏡",
-            "一定能治好近視",
-            "完全沒有作用"
-        ],
-        answer:0
-    },
+  {
+    type: 0,
+    question: "眼睛乾澀時，以下哪個做法較適合？",
+    options: [
+      "一直揉眼睛",
+      "讓眼睛適度休息",
+      "一直盯著手機",
+      "待在黑暗中看螢幕"
+    ],
+    answer: 1
+  },
 
-    {
-        type:0,
-        question:"看東西時經常瞇眼睛，應該怎麼辦？",
-        options:[
-            "繼續瞇眼",
-            "增加看手機時間",
-            "接受視力檢查",
-            "閉眼看東西"
-        ],
-        answer:2
-    },
+  {
+    type: 0,
+    question: "長時間近距離用眼可能造成什麼？",
+    options: [
+      "眼睛疲勞",
+      "視力一定立刻恢復",
+      "眼睛完全不會疲勞",
+      "不會有任何影響"
+    ],
+    answer: 0
+  },
 
-    {
-        type:0,
-        question:"保護眼睛時，下列哪個做法較適當？",
-        options:[
-            "長時間不休息",
-            "保持良好用眼習慣",
-            "一直揉眼睛",
-            "關燈看手機"
-        ],
-        answer:1
-    },
+  {
+    type: 0,
+    question: "平常應該避免哪一種用眼方式？",
+    options: [
+      "適度休息",
+      "保持適當距離",
+      "長時間連續近距離用眼",
+      "到戶外活動"
+    ],
+    answer: 2
+  },
 
-    {
-        type:0,
-        question:"眼睛感到乾澀時，哪種做法較適當？",
-        options:[
-            "一直揉眼睛",
-            "適度休息",
-            "繼續長時間看螢幕",
-            "故意不眨眼"
-        ],
-        answer:1
-    },
+  {
+    type: 0,
+    question: "眼睛出現持續不舒服的情況時，可以怎麼做？",
+    options: [
+      "完全不理會",
+      "尋求專業檢查",
+      "一直揉眼睛",
+      "繼續熬夜"
+    ],
+    answer: 1
+  },
 
-    {
-        type:0,
-        question:"哪一種情況較需要接受專業眼科檢查？",
-        options:[
-            "視力突然明顯變差",
-            "今天看了一本書",
-            "今天有到戶外",
-            "正常眨眼"
-        ],
-        answer:0
-    },
+  {
+    type: 0,
+    question: "良好的照明對閱讀有什麼幫助？",
+    options: [
+      "減少用眼負擔",
+      "讓眼睛不用休息",
+      "一定可以治療近視",
+      "讓視力永久不變"
+    ],
+    answer: 0
+  },
 
-    {
-        type:0,
-        question:"保護眼睛最重要的是什麼？",
-        options:[
-            "只靠眼藥水",
-            "只戴太陽眼鏡",
-            "建立良好的用眼習慣",
-            "完全不看書"
-        ],
-        answer:2
-    },
+  {
+    type: 0,
+    question: "日常生活中保護眼睛的重要方式之一是？",
+    options: [
+      "規律休息",
+      "熬夜",
+      "長時間滑手機",
+      "躺著看書"
+    ],
+    answer: 0
+  },
 
-    {
-        type:0,
-        question:"如果眼睛持續不舒服，最適合怎麼做？",
-        options:[
-            "忍耐就好",
-            "接受專業檢查",
-            "增加手機使用時間",
-            "一直揉眼睛"
-        ],
-        answer:1
-    },
-
-
-    /* ===== 3C 使用 ===== */
-
-    {
-        type:1,
-        question:"長時間使用3C產品時，應該怎麼做？",
-        options:[
-            "一直盯著螢幕",
-            "適時讓眼睛休息",
-            "把螢幕拿得更近",
-            "關燈繼續使用"
-        ],
-        answer:1
-    },
-
-    {
-        type:1,
-        question:"使用手機時，哪種環境較適合？",
-        options:[
-            "完全黑暗",
-            "有適當環境光",
-            "躲在棉被裡",
-            "只有螢幕亮"
-        ],
-        answer:1
-    },
-
-    {
-        type:1,
-        question:"長時間看螢幕時，可以偶爾看向遠處休息嗎？",
-        options:[
-            "可以",
-            "不可以",
-            "只有晚上可以",
-            "只有戴眼鏡才可以"
-        ],
-        answer:0
-    },
-
-    {
-        type:1,
-        question:"下列哪個行為比較不利於眼睛健康？",
-        options:[
-            "適度休息",
-            "保持適當距離",
-            "黑暗中長時間滑手機",
-            "看遠處休息"
-        ],
-        answer:2
-    },
-
-    {
-        type:1,
-        question:"使用電腦時，應避免哪種情況？",
-        options:[
-            "適時休息",
-            "保持適當距離",
-            "長時間連續使用",
-            "保持適當光線"
-        ],
-        answer:2
-    },
-
-    {
-        type:1,
-        question:"使用手機時，螢幕距離應該如何？",
-        options:[
-            "越近越好",
-            "保持適當距離",
-            "貼著眼睛",
-            "完全不重要"
-        ],
-        answer:1
-    },
-
-    {
-        type:1,
-        question:"如果長時間使用3C後眼睛疲勞，應該？",
-        options:[
-            "繼續使用",
-            "休息一下",
-            "關燈繼續看",
-            "把手機拿更近"
-        ],
-        answer:1
-    },
-
-    {
-        type:1,
-        question:"使用3C產品時，下列哪個習慣較好？",
-        options:[
-            "固定休息",
-            "一直盯著看",
-            "躺著看",
-            "關燈看"
-        ],
-        answer:0
-    },
-
-    {
-        type:1,
-        question:"睡前長時間滑手機可能影響什麼？",
-        options:[
-            "睡眠",
-            "鞋子大小",
-            "頭髮長度",
-            "身高立即增加"
-        ],
-        answer:0
-    },
-
-    {
-        type:1,
-        question:"使用3C產品時，哪個做法比較適當？",
-        options:[
-            "保持適當距離並適時休息",
-            "越近越清楚越好",
-            "完全不休息",
-            "關燈使用"
-        ],
-        answer:0
-    },
+  {
+    type: 0,
+    question: "如果發現視力異常，較適合？",
+    options: [
+      "自行猜測原因",
+      "尋求眼科或驗光專業協助",
+      "繼續忍耐",
+      "增加手機使用時間"
+    ],
+    answer: 1
+  },
 
 
-    /* ===== 閱讀習慣 ===== */
+  /* ===== 📱 3C 使用 10 ===== */
 
-    {
-        type:2,
-        question:"看書時，眼睛和書本通常建議保持約多少距離？",
-        options:[
-            "10公分",
-            "20公分",
-            "35～40公分",
-            "70公分"
-        ],
-        answer:2
-    },
+  {
+    type: 1,
+    question: "使用手機或平板時，應該避免？",
+    options: [
+      "適度休息",
+      "保持適當距離",
+      "長時間連續使用",
+      "調整螢幕亮度"
+    ],
+    answer: 2
+  },
 
-    {
-        type:2,
-        question:"閱讀時應保持什麼姿勢？",
-        options:[
-            "趴著看",
-            "保持適當坐姿",
-            "躺著看",
-            "歪著頭看"
-        ],
-        answer:1
-    },
+  {
+    type: 1,
+    question: "使用 3C 產品時，適當的做法是？",
+    options: [
+      "一直不休息",
+      "定時讓眼睛休息",
+      "越近越清楚所以越近越好",
+      "關燈使用"
+    ],
+    answer: 1
+  },
 
-    {
-        type:2,
-        question:"閱讀時哪種環境較適合？",
-        options:[
-            "完全黑暗",
-            "光線適當",
-            "只有螢幕亮",
-            "背光非常強"
-        ],
-        answer:1
-    },
+  {
+    type: 1,
+    question: "手機螢幕太亮時，可以怎麼做？",
+    options: [
+      "適度調整亮度",
+      "調到最亮",
+      "關掉所有燈",
+      "把手機拿更近"
+    ],
+    answer: 0
+  },
 
-    {
-        type:2,
-        question:"閱讀時間較長時，應該怎麼做？",
-        options:[
-            "完全不休息",
-            "適度休息",
-            "越近越好",
-            "閉眼繼續讀"
-        ],
-        answer:1
-    },
+  {
+    type: 1,
+    question: "使用 3C 時，應避免哪種姿勢？",
+    options: [
+      "保持適當距離",
+      "坐姿穩定",
+      "躺著長時間滑手機",
+      "適度休息"
+    ],
+    answer: 2
+  },
 
-    {
-        type:2,
-        question:"下列哪個閱讀習慣較好？",
-        options:[
-            "保持適當距離",
-            "趴著看書",
-            "躺著看書",
-            "在黑暗中閱讀"
-        ],
-        answer:0
-    },
+  {
+    type: 1,
+    question: "長時間滑手機後，應該？",
+    options: [
+      "繼續滑",
+      "讓眼睛休息",
+      "增加亮度",
+      "把手機拿近"
+    ],
+    answer: 1
+  },
 
-    {
-        type:2,
-        question:"看書時，書本太靠近眼睛可能怎麼樣？",
-        options:[
-            "較容易造成眼睛疲勞",
-            "一定讓視力變好",
-            "完全沒有影響",
-            "可以保護眼睛"
-        ],
-        answer:0
-    },
+  {
+    type: 1,
+    question: "使用電腦時，螢幕位置應？",
+    options: [
+      "保持適當距離",
+      "貼著臉",
+      "越近越好",
+      "完全不需要注意"
+    ],
+    answer: 0
+  },
 
-    {
-        type:2,
-        question:"閱讀時應避免哪種情況？",
-        options:[
-            "光線適當",
-            "保持距離",
-            "長時間不休息",
-            "坐姿良好"
-        ],
-        answer:2
-    },
+  {
+    type: 1,
+    question: "晚上使用手機時，較好的做法是？",
+    options: [
+      "關掉室內燈",
+      "保持適當環境照明",
+      "把螢幕調到最亮",
+      "一直使用到睡著"
+    ],
+    answer: 1
+  },
 
-    {
-        type:2,
-        question:"閱讀時保持適當距離有什麼好處？",
-        options:[
-            "減少眼睛負擔",
-            "一定恢復視力",
-            "讓書本變大",
-            "不用休息"
-        ],
-        answer:0
-    },
+  {
+    type: 1,
+    question: "使用 3C 時覺得眼睛疲勞，應該？",
+    options: [
+      "休息",
+      "繼續使用",
+      "揉眼睛",
+      "把螢幕靠近"
+    ],
+    answer: 0
+  },
 
-    {
-        type:2,
-        question:"哪一種行為比較適合長時間閱讀？",
-        options:[
-            "適時休息",
-            "一直看不休息",
-            "趴著看",
-            "躺著看"
-        ],
-        answer:0
-    },
+  {
+    type: 1,
+    question: "長時間使用 3C 時，哪個習慣較好？",
+    options: [
+      "適度休息",
+      "完全不眨眼",
+      "一直盯著螢幕",
+      "躺著使用"
+    ],
+    answer: 0
+  },
 
-    {
-        type:2,
-        question:"閱讀時如果感到眼睛疲勞，可以怎麼做？",
-        options:[
-            "繼續看",
-            "讓眼睛休息",
-            "把書拿更近",
-            "關燈繼續看"
-        ],
-        answer:1
-    },
+  {
+    type: 1,
+    question: "使用手機時，下列哪項較符合護眼原則？",
+    options: [
+      "保持適當距離並適時休息",
+      "關燈滑手機",
+      "連續使用數小時",
+      "螢幕越近越好"
+    ],
+    answer: 0
+  },
 
 
-    /* ===== 戶外／生活習慣 ===== */
+  /* ===== 📖 閱讀習慣 10 ===== */
 
-    {
-        type:3,
-        question:"增加戶外活動時間對兒童青少年的近視預防有幫助嗎？",
-        options:[
-            "有幫助",
-            "沒有",
-            "只有晚上",
-            "一定治好近視"
-        ],
-        answer:0
-    },
+  {
+    type: 2,
+    question: "閱讀時應保持？",
+    options: [
+      "適當距離",
+      "書本貼著臉",
+      "躺著看",
+      "趴著看"
+    ],
+    answer: 0
+  },
 
-    {
-        type:3,
-        question:"戶外活動時，陽光較強可以怎麼做？",
-        options:[
-            "直視太陽",
-            "適當遮陽",
-            "閉一隻眼睛看",
-            "完全不需要保護"
-        ],
-        answer:1
-    },
+  {
+    type: 2,
+    question: "閱讀環境應該？",
+    options: [
+      "光線適當",
+      "完全沒有光",
+      "只有螢幕光",
+      "越暗越好"
+    ],
+    answer: 0
+  },
 
-    {
-        type:3,
-        question:"哪一種生活習慣對眼睛較好？",
-        options:[
-            "規律作息",
-            "經常熬夜",
-            "長時間不休息",
-            "一直滑手機"
-        ],
-        answer:0
-    },
+  {
+    type: 2,
+    question: "長時間閱讀後應該？",
+    options: [
+      "繼續閱讀",
+      "適度休息",
+      "把書拿近",
+      "關燈閱讀"
+    ],
+    answer: 1
+  },
 
-    {
-        type:3,
-        question:"充足睡眠對眼睛有幫助嗎？",
-        options:[
-            "有",
-            "完全沒有",
-            "只有白天有",
-            "一定讓近視消失"
-        ],
-        answer:0
-    },
+  {
+    type: 2,
+    question: "哪一種閱讀習慣較不理想？",
+    options: [
+      "保持距離",
+      "適當照明",
+      "躺著長時間閱讀",
+      "定時休息"
+    ],
+    answer: 2
+  },
 
-    {
-        type:3,
-        question:"下列哪一項屬於良好的生活習慣？",
-        options:[
-            "規律睡眠",
-            "每天熬夜",
-            "長時間滑手機",
-            "完全不運動"
-        ],
-        answer:0
-    },
+  {
+    type: 2,
+    question: "閱讀時姿勢的重要性是？",
+    options: [
+      "有助於維持良好閱讀習慣",
+      "完全沒有關係",
+      "越靠近越好",
+      "一定可以治療近視"
+    ],
+    answer: 0
+  },
 
-    {
-        type:3,
-        question:"戶外活動時，可以怎麼保護眼睛？",
-        options:[
-            "適當遮陽",
-            "直視太陽",
-            "完全不眨眼",
-            "一直看強光"
-        ],
-        answer:0
-    },
+  {
+    type: 2,
+    question: "看書時應避免？",
+    options: [
+      "適當照明",
+      "長時間近距離閱讀",
+      "定時休息",
+      "保持距離"
+    ],
+    answer: 1
+  },
 
-    {
-        type:3,
-        question:"除了用眼習慣之外，哪項也與眼睛健康有關？",
-        options:[
-            "生活作息",
-            "鞋子顏色",
-            "頭髮長度",
-            "衣服尺寸"
-        ],
-        answer:0
-    },
+  {
+    type: 2,
+    question: "閱讀時如果眼睛疲勞，可以？",
+    options: [
+      "休息一下",
+      "繼續看",
+      "把書拿近",
+      "揉眼睛"
+    ],
+    answer: 0
+  },
 
-    {
-        type:3,
-        question:"如果平常長時間使用3C，可以增加什麼活動？",
-        options:[
-            "戶外活動",
-            "熬夜",
-            "繼續滑手機",
-            "關燈看螢幕"
-        ],
-        answer:0
-    },
+  {
+    type: 2,
+    question: "適當的閱讀距離可以幫助？",
+    options: [
+      "減少近距離用眼負擔",
+      "讓眼睛不用休息",
+      "保證不近視",
+      "讓視力立即變好"
+    ],
+    answer: 0
+  },
 
-    {
-        type:3,
-        question:"良好的睡眠習慣包含什麼？",
-        options:[
-            "規律作息",
-            "每天熬夜",
-            "睡前一直滑手機",
-            "完全不睡"
-        ],
-        answer:0
-    },
+  {
+    type: 2,
+    question: "以下哪個閱讀環境較合適？",
+    options: [
+      "光線適當",
+      "完全黑暗",
+      "只有手機光",
+      "非常刺眼的光"
+    ],
+    answer: 0
+  },
 
-    {
-        type:3,
-        question:"以下哪個做法有助於維持良好生活習慣？",
-        options:[
-            "適度戶外活動與充足休息",
-            "長時間不休息",
-            "經常熬夜",
-            "整天使用3C"
-        ],
-        answer:0
-    }
+  {
+    type: 2,
+    question: "養成良好閱讀習慣的重點之一是？",
+    options: [
+      "適度休息",
+      "熬夜閱讀",
+      "趴著看書",
+      "越近越好"
+    ],
+    answer: 0
+  },
+
+
+  /* ===== 🌳 戶外生活 10 ===== */
+
+  {
+    type: 3,
+    question: "日常生活中適度進行戶外活動有什麼好處？",
+    options: [
+      "有助於維持良好用眼習慣",
+      "可以完全取代睡眠",
+      "可以保證不近視",
+      "可以不用休息"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 3,
+    question: "下課或休息時，可以做什麼？",
+    options: [
+      "到戶外活動",
+      "繼續滑手機",
+      "繼續近距離閱讀",
+      "一直盯著電腦"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 3,
+    question: "戶外活動時可以？",
+    options: [
+      "適度看看遠方",
+      "一直盯著手機",
+      "躲在黑暗中",
+      "完全不休息"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 3,
+    question: "良好的生活習慣包含？",
+    options: [
+      "適度戶外活動",
+      "長時間使用 3C",
+      "熬夜",
+      "長時間近距離用眼"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 3,
+    question: "戶外活動可以讓我們？",
+    options: [
+      "離開近距離用眼的環境",
+      "完全不用睡覺",
+      "不用控制 3C 使用",
+      "保證視力不變"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 3,
+    question: "下列哪個比較適合作為日常休息方式？",
+    options: [
+      "戶外活動",
+      "連續滑手機",
+      "一直看書",
+      "一直看電腦"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 3,
+    question: "戶外活動時也要注意？",
+    options: [
+      "適當防曬與眼睛保護",
+      "一直盯著太陽",
+      "完全不需要保護",
+      "只看手機"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 3,
+    question: "培養戶外活動習慣可以幫助我們？",
+    options: [
+      "建立較健康的生活方式",
+      "完全不需要休息",
+      "不用睡覺",
+      "不用注意用眼"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 3,
+    question: "休息時間可以選擇？",
+    options: [
+      "到戶外走走",
+      "繼續玩手機",
+      "繼續近距離看書",
+      "繼續看電腦"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 3,
+    question: "下列哪個屬於良好的戶外生活習慣？",
+    options: [
+      "規律安排戶外活動",
+      "整天待在室內使用 3C",
+      "熬夜",
+      "長時間近距離閱讀"
+    ],
+    answer: 0
+  }
 
 ];
 
 
-/* ==================================================
+/* =========================================================
+   更新棋盤
+========================================================= */
+
+function updateBoard() {
+
+  document.querySelectorAll(".players").forEach(
+    div => div.innerHTML = ""
+  );
+
+  players.forEach(player => {
+
+    const cell = document.getElementById(
+      `cell${player.position}`
+    );
+
+    if (cell) {
+
+      const playerDiv = cell.querySelector(".players");
+
+      const span = document.createElement("span");
+
+      span.textContent = player.icon;
+
+      playerDiv.appendChild(span);
+
+    }
+
+  });
+
+}
+
+
+/* =========================================================
+   玩家資訊
+========================================================= */
+
+function updatePlayerInfo() {
+
+  const container = document.getElementById("playerInfo");
+
+  container.innerHTML = "";
+
+  players.forEach((player, index) => {
+
+    const div = document.createElement("div");
+
+    div.className = "player-card";
+
+    if (index === currentPlayerIndex) {
+      div.classList.add("current");
+    }
+
+    let badgeText = "";
+
+    badgeTypes.forEach((badge, i) => {
+
+      badgeText +=
+        `${badge.icon}${player.badges[i]} `;
+
+    });
+
+    div.innerHTML = `
+      <strong>
+        ${player.icon} ${player.name}
+        ${player.type === "bot" ? "🤖" : "🧍"}
+      </strong>
+
+      <br>
+
+      位置：${player.position}
+
+      <br>
+
+      徽章：
+      <span class="badges">
+        ${badgeText}
+      </span>
+    `;
+
+    container.appendChild(div);
+
+  });
+
+}
+
+
+/* =========================================================
+   更新目前回合
+========================================================= */
+
+function updateTurn() {
+
+  const player = players[currentPlayerIndex];
+
+  document.getElementById("currentTurn").textContent =
+    `${player.icon} ${player.name}`;
+
+  updatePlayerInfo();
+
+}
+
+
+/* =========================================================
+   擲骰子
+========================================================= */
+
+document.getElementById("rollDice").addEventListener(
+  "click",
+  rollDice
+);
+
+
+function rollDice() {
+
+  if (gameOver || moving) return;
+
+  const player = players[currentPlayerIndex];
+
+  if (player.type !== "human") return;
+
+  if (player.rest) {
+
+    player.rest = false;
+
+    document.getElementById("diceResult").textContent =
+      "😴 本回合休息，跳過擲骰。";
+
+    setTimeout(nextTurn, 1000);
+
+    return;
+  }
+
+  performRoll();
+
+}
+
+
+/* =========================================================
+   實際擲骰
+========================================================= */
+
+function performRoll() {
+
+  if (gameOver || moving) return;
+
+  moving = true;
+
+  const player = players[currentPlayerIndex];
+
+  const dice = Math.floor(Math.random() * 6) + 1;
+
+  document.getElementById("diceResult").textContent =
+    `🎲 ${player.name} 擲出了 ${dice} 點！`;
+
+  let steps = 0;
+
+  const moveInterval = setInterval(() => {
+
+    player.position =
+      (player.position + 1) % 24;
+
+    steps++;
+
+    updateBoard();
+
+    if (steps >= dice) {
+
+      clearInterval(moveInterval);
+
+      moving = false;
+
+      setTimeout(() => {
+
+        if (eventCells.includes(player.position)) {
+
+          drawCard();
+
+        } else {
+
+          nextTurn();
+
+        }
+
+      }, 500);
+
+    }
+
+  }, 250);
+
+}
+
+
+/* =========================================================
    抽卡
-   ================================================== */
+========================================================= */
 
-function drawCard(){
+function drawCard() {
 
-    if(gameEnded)return;
+  const isQuiz = Math.random() < 0.67;
 
-    if(Math.random()<0.5){
+  if (isQuiz) {
 
-        drawEventCard();
+    drawQuizCard();
 
-    }else{
+  } else {
 
-        drawQuizCard();
+    drawEventCard();
+
+  }
+
+}
+
+
+/* =========================================================
+   事件卡
+========================================================= */
+
+function drawEventCard() {
+
+  const card =
+    eventCards[
+      Math.floor(Math.random() * eventCards.length)
+    ];
+
+  const player = players[currentPlayerIndex];
+
+  document.getElementById("cardTitle").textContent =
+    "🎴 事件卡";
+
+  document.getElementById("cardText").textContent =
+    card.text;
+
+  document.getElementById("quizOptions").innerHTML = "";
+
+  document.getElementById("closeCard").style.display =
+    "inline-block";
+
+  document.getElementById("cardOverlay").style.display =
+    "flex";
+
+
+  setTimeout(() => {
+
+    if (card.effect === "move") {
+
+      player.position =
+        (player.position + card.value) % 24;
+
+      updateBoard();
 
     }
+
+    else if (card.effect === "back") {
+
+      player.position =
+        (player.position - card.value + 24) % 24;
+
+      updateBoard();
+
+    }
+
+    else if (card.effect === "rest") {
+
+      player.rest = true;
+
+    }
+
+  }, 500);
+
+
+  if (player.type === "bot") {
+
+    setTimeout(() => {
+
+      closeCard();
+
+    }, 1300);
+
+  }
+
 }
 
 
-/* ==================================================
-   普通事件卡
-   ================================================== */
-
-function drawEventCard(){
-
-    const player =
-        players[currentPlayerIndex];
-
-    const card =
-        eventCards[
-            Math.floor(
-                Math.random()*eventCards.length
-            )
-        ];
-
-    document.getElementById(
-        "cardTitle"
-    ).textContent="🎴 事件";
-
-    document.getElementById(
-        "cardContent"
-    ).textContent=card.text;
-
-    document.getElementById(
-        "quizOptions"
-    ).style.display="none";
-
-    document.getElementById(
-        "cardOverlay"
-    ).style.display="flex";
-
-
-    // 執行事件效果
-    setTimeout(()=>{
-
-        if(gameEnded)return;
-
-        if(card.effect==="move"){
-
-            player.position += card.value;
-
-            if(player.position>=24){
-                player.position %= 24;
-            }
-
-            document.getElementById(
-                "cardContent"
-            ).textContent =
-                card.text+
-                "\n\n➡️ 前進 "+
-                card.value+" 格！";
-
-            updateBoard();
-
-        }
-
-        else if(card.effect==="back"){
-
-            player.position -= card.value;
-
-            if(player.position<0){
-                player.position += 24;
-            }
-
-            document.getElementById(
-                "cardContent"
-            ).textContent =
-                card.text+
-                "\n\n⬅️ 後退 "+
-                card.value+" 格！";
-
-            updateBoard();
-
-        }
-
-        else if(card.effect==="rest"){
-
-            player.rest=true;
-
-            document.getElementById(
-                "cardContent"
-            ).textContent =
-                card.text+
-                "\n\n💤 下一回合休息一次！";
-        }
-
-
-        // BOT自動關閉
-        if(player.type==="bot"){
-
-            setTimeout(()=>{
-                closeCard();
-            },1200);
-
-        }
-
-    },500);
-}
-
-
-/* ==================================================
+/* =========================================================
    問答卡
-   ================================================== */
+========================================================= */
 
-function drawQuizCard(){
+function drawQuizCard() {
 
-    const player =
-        players[currentPlayerIndex];
+  currentQuiz =
+    quizCards[
+      Math.floor(Math.random() * quizCards.length)
+    ];
 
-    currentQuiz =
-        quizCards[
-            Math.floor(
-                Math.random()*quizCards.length
-            )
-        ];
+  const player = players[currentPlayerIndex];
 
-    document.getElementById(
-        "cardTitle"
-    ).textContent =
-        "❓ "+badgeNames[currentQuiz.type]+"問答";
+  document.getElementById("cardTitle").textContent =
+    `${badgeTypes[currentQuiz.type].icon} ${badgeTypes[currentQuiz.type].name}`;
 
-    document.getElementById(
-        "cardContent"
-    ).textContent =
-        currentQuiz.question;
+  document.getElementById("cardText").textContent =
+    currentQuiz.question;
 
-    document.getElementById(
-        "quizOptions"
-    ).style.display="block";
+  const optionsContainer =
+    document.getElementById("quizOptions");
 
-    document.getElementById(
-        "quizResult"
-    ).textContent="";
+  optionsContainer.innerHTML = "";
 
-    for(let i=0;i<4;i++){
+  currentQuiz.options.forEach((option, index) => {
 
-        const button =
-            document.getElementById(
-                "answer"+i
-            );
+    const button = document.createElement("button");
 
-        button.style.display="block";
+    button.className = "quiz-option";
 
-        button.textContent =
-            String.fromCharCode(65+i)+
-            ". "+
-            currentQuiz.options[i];
-    }
+    button.textContent =
+      `${String.fromCharCode(65 + index)}. ${option}`;
 
-    document.getElementById(
-        "cardOverlay"
-    ).style.display="flex";
+    button.addEventListener("click", () => {
+
+      checkAnswer(index);
+
+    });
+
+    optionsContainer.appendChild(button);
+
+  });
 
 
-    // BOT自動回答
-    if(player.type==="bot"){
+  document.getElementById("closeCard").style.display =
+    "none";
 
-        setTimeout(()=>{
+  document.getElementById("cardOverlay").style.display =
+    "flex";
 
-            const answer =
-                Math.floor(Math.random()*4);
 
-            checkAnswer(answer);
+  /* BOT 自動答題 */
 
-        },1000);
-    }
+  if (player.type === "bot") {
+
+    setTimeout(() => {
+
+      botAnswer();
+
+    }, 1000);
+
+  }
+
 }
 
 
-/* ==================================================
-   判斷答案
-   ================================================== */
+/* =========================================================
+   BOT 答題
+   75% 正確、25% 錯誤
+========================================================= */
 
-function checkAnswer(index){
+function botAnswer() {
 
-    if(!currentQuiz)return;
+  if (!currentQuiz || gameOver) return;
 
-    const player =
-        players[currentPlayerIndex];
+  let answer;
 
-    if(index===currentQuiz.answer){
+  /* 75% 答對 */
 
-        player.badges[
-            currentQuiz.type
-        ]++;
+  if (Math.random() < 0.75) {
 
-        document.getElementById(
-            "quizResult"
-        ).textContent =
-            "🎉 答對了！獲得「"+
-            badgeNames[currentQuiz.type]+
-            "」徽章 ×1";
+    answer = currentQuiz.answer;
 
-        updateBadgeInfo();
+  }
 
-        // 檢查勝利
-        if(checkWin(player)){
+  /* 25% 故意答錯 */
 
-            setTimeout(()=>{
-                closeCard();
-                showWin(player);
-            },1200);
+  else {
 
-            return;
-        }
+    const wrongAnswers = [0, 1, 2, 3]
+      .filter(index => index !== currentQuiz.answer);
 
-    }else{
+    answer =
+      wrongAnswers[
+        Math.floor(Math.random() * wrongAnswers.length)
+      ];
 
-        document.getElementById(
-            "quizResult"
-        ).textContent =
-            "❌ 答錯了！沒有懲罰。";
-    }
+  }
 
+  checkAnswer(answer);
 
-    // 隱藏選項
-    for(let i=0;i<4;i++){
-
-        document.getElementById(
-            "answer"+i
-        ).style.display="none";
-    }
-
-
-    // BOT自動關閉
-    if(player.type==="bot"){
-
-        setTimeout(()=>{
-            closeCard();
-        },1200);
-    }
 }
 
 
-/* ==================================================
-   勝利判定
-   ================================================== */
+/* =========================================================
+   答題判定
+========================================================= */
 
-function checkWin(player){
+function checkAnswer(answer) {
 
-    // 條件一：
-    // 四種類型各至少一個
+  if (!currentQuiz || gameOver) return;
 
-    const allTypes =
-        player.badges.every(
-            badge=>badge>=1
-        );
+  const player = players[currentPlayerIndex];
 
-    if(allTypes)return true;
+  const correct =
+    answer === currentQuiz.answer;
 
 
-    // 條件二：
-    // 任一類型達到4個
+  /* 鎖住選項 */
 
-    const sameType =
-        player.badges.some(
-            badge=>badge>=4
-        );
+  document
+    .querySelectorAll(".quiz-option")
+    .forEach(button => {
 
-    if(sameType)return true;
+      button.disabled = true;
 
-    return false;
+    });
+
+
+  if (correct) {
+
+    player.badges[currentQuiz.type]++;
+
+    document.getElementById("cardText").textContent =
+      `✅ 答對了！獲得 ${badgeTypes[currentQuiz.type].icon} ${badgeTypes[currentQuiz.type].name} 徽章 1 枚！`;
+
+  }
+
+  else {
+
+    document.getElementById("cardText").textContent =
+      `❌ 答錯了！正確答案是：${currentQuiz.options[currentQuiz.answer]}`;
+
+  }
+
+
+  document.getElementById("closeCard").style.display =
+    "inline-block";
+
+
+  updatePlayerInfo();
+
+
+  if (checkWin(player)) {
+
+    setTimeout(() => {
+
+      closeCard();
+
+      showWin(player);
+
+    }, 900);
+
+    return;
+
+  }
+
+
+  /* BOT 自動關閉 */
+
+  if (player.type === "bot") {
+
+    setTimeout(() => {
+
+      closeCard();
+
+    }, 1200);
+
+  }
+
 }
 
 
-/* ==================================================
-   顯示勝利畫面
-   ================================================== */
-
-function showWin(player){
-
-    gameEnded=true;
-
-    document.getElementById(
-        "rollButton"
-    ).disabled=true;
-
-    document.getElementById(
-        "winnerName"
-    ).textContent =
-        player.icon+
-        " "+player.name+" 獲勝！";
-
-    let text="";
-
-    for(let i=0;i<4;i++){
-
-        text +=
-            badgeNames[i]+
-            " × "+
-            player.badges[i]+
-            "<br>";
-    }
-
-    document.getElementById(
-        "winBadges"
-    ).innerHTML=text;
-
-    document.getElementById(
-        "winOverlay"
-    ).style.display="flex";
-}
-
-
-/* ==================================================
+/* =========================================================
    關閉卡片
-   ================================================== */
+========================================================= */
 
-function closeCard(){
+document.getElementById("closeCard").addEventListener(
+  "click",
+  closeCard
+);
 
-    if(gameEnded)return;
 
-    document.getElementById(
-        "cardOverlay"
-    ).style.display="none";
+function closeCard() {
 
-    document.getElementById(
-        "quizResult"
-    ).textContent="";
+  document.getElementById("cardOverlay").style.display =
+    "none";
 
-    currentQuiz=null;
+  currentQuiz = null;
 
-    nextTurn();
+  if (!gameOver) {
+
+    setTimeout(nextTurn, 300);
+
+  }
+
 }
 
 
-/* ==================================================
+/* =========================================================
+   勝利條件
+========================================================= */
+
+function checkWin(player) {
+
+  /* 四種徽章各至少 1 */
+
+  const allTypes =
+    player.badges.every(count => count >= 1);
+
+
+  /* 任一類別達到 4 */
+
+  const oneType =
+    player.badges.some(count => count >= 4);
+
+
+  return allTypes || oneType;
+
+}
+
+
+/* =========================================================
+   勝利畫面
+========================================================= */
+
+function showWin(player) {
+
+  gameOver = true;
+
+  document.getElementById("winnerText").innerHTML =
+    `<h3>${player.icon} ${player.name} 獲勝！</h3>
+     <p>恭喜完成視力保健挑戰！</p>`;
+
+  let badgeText = "<p>";
+
+  badgeTypes.forEach((badge, index) => {
+
+    badgeText +=
+      `${badge.icon} ${badge.name}：${player.badges[index]} 枚<br>`;
+
+  });
+
+  badgeText += "</p>";
+
+  document.getElementById("winnerBadges").innerHTML =
+    badgeText;
+
+  document.getElementById("winOverlay").style.display =
+    "flex";
+
+}
+
+
+/* =========================================================
    下一回合
-   ================================================== */
+========================================================= */
 
-function nextTurn(){
+function nextTurn() {
 
-    if(gameEnded)return;
+  if (gameOver) return;
 
-    currentPlayerIndex++;
+  currentPlayerIndex =
+    (currentPlayerIndex + 1) % players.length;
 
-    if(
-        currentPlayerIndex>=players.length
-    ){
-        currentPlayerIndex=0;
-    }
+  updateTurn();
 
-
-    const player =
-        players[currentPlayerIndex];
+  document.getElementById("diceResult").textContent =
+    "";
 
 
-    // 休息效果
-    if(player.rest){
+  setTimeout(checkBotTurn, 500);
 
-        player.rest=false;
-
-        document.getElementById(
-            "diceResult"
-        ).textContent =
-            player.name+
-            " 本回合休息，不用擲骰子。";
-
-        currentPlayerIndex++;
-
-        if(
-            currentPlayerIndex>=players.length
-        ){
-            currentPlayerIndex=0;
-        }
-    }
-
-    updateTurnInfo();
 }
+
+
+/* =========================================================
+   BOT 回合
+========================================================= */
+
+function checkBotTurn() {
+
+  if (gameOver) return;
+
+  const player = players[currentPlayerIndex];
+
+  if (player.type !== "bot") {
+
+    document.getElementById("rollDice").disabled =
+      false;
+
+    return;
+
+  }
+
+
+  document.getElementById("rollDice").disabled =
+    true;
+
+
+  /* BOT 需要休息 */
+
+  if (player.rest) {
+
+    player.rest = false;
+
+    document.getElementById("diceResult").textContent =
+      "😴 機器人本回合休息。";
+
+    setTimeout(nextTurn, 1000);
+
+    return;
+
+  }
+
+
+  /* BOT 1 秒後自動擲骰 */
+
+  setTimeout(() => {
+
+    if (!gameOver) {
+
+      performRoll();
+
+    }
+
+  }, 1000);
+
+}
+
+
+/* =========================================================
+   重新開始
+========================================================= */
+
+document.getElementById("restartGame").addEventListener(
+  "click",
+  () => {
+
+    location.reload();
+
+  }
+);
 
 </script>
 
 </body>
 </html>
-```
