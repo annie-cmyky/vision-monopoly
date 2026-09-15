@@ -12,20 +12,20 @@
 
 body {
   margin: 0;
-  font-family: "Noto Sans TC", sans-serif;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
   background: #f5f8ff;
   color: #333;
 }
 
 h1 {
   text-align: center;
-  margin: 20px 0;
   color: #4c6faf;
+  margin: 20px 0;
 }
 
-/* =========================
+/* ========================================
    設定畫面
-========================= */
+======================================== */
 
 #setup {
   width: 90%;
@@ -48,16 +48,18 @@ h1 {
   border-radius: 12px;
 }
 
-.player-setting button {
-  margin-right: 8px;
-  padding: 7px 14px;
+.player-setting button,
+.player-count {
+  margin: 5px 5px 5px 0;
+  padding: 8px 15px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   background: #dfe7f5;
 }
 
-.player-setting button.selected {
+.player-setting button.selected,
+.player-count.selected {
   background: #7190c9;
   color: white;
 }
@@ -74,34 +76,135 @@ h1 {
   cursor: pointer;
 }
 
-/* =========================
-   遊戲區
-========================= */
+/* ========================================
+   規則頁
+======================================== */
+
+#rulesScreen {
+  display: none;
+  width: 90%;
+  max-width: 650px;
+  margin: 30px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+#rulesScreen h2 {
+  text-align: center;
+  color: #526fa9;
+}
+
+.rules-content {
+  line-height: 1.8;
+}
+
+.rules-content h3 {
+  color: #657fb2;
+  margin-bottom: 5px;
+}
+
+.rules-content ul {
+  padding-left: 25px;
+}
+
+#enterGame {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: #6685c5;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* ========================================
+   遊戲
+======================================== */
 
 #game {
   display: none;
 }
 
-.game-layout {
+.game-container {
   width: 95%;
-  max-width: 1250px;
+  max-width: 1200px;
   margin: auto;
+}
 
+/* ========================================
+   計分表
+======================================== */
+
+.score-box {
+  background: white;
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+.score-box h2 {
+  margin: 0 0 12px;
+  color: #526fa9;
+  font-size: 21px;
+}
+
+#playerInfo {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.player-card {
+  padding: 10px;
+  background: #f5f7fc;
+  border-radius: 10px;
+  line-height: 1.6;
+}
+
+.player-card.current {
+  background: #eaf0ff;
+  border: 2px solid #6685c5;
+}
+
+.badges {
+  font-size: 15px;
+}
+
+/* ========================================
+   地圖＋右側規則
+======================================== */
+
+.game-layout {
   display: flex;
   gap: 20px;
   align-items: flex-start;
-  justify-content: center;
 }
 
-/* =========================
+.board-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.side-panel {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+/* ========================================
    棋盤
-========================= */
+======================================== */
 
 #board {
-  width: 700px;
-  height: 700px;
+  width: min(700px, 100%);
+  aspect-ratio: 1 / 1;
+  margin: auto;
 
   display: grid;
+
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(7, 1fr);
 
@@ -115,8 +218,6 @@ h1 {
 .cell {
   background: white;
   border-radius: 8px;
-  min-width: 0;
-  min-height: 0;
 
   display: flex;
   flex-direction: column;
@@ -124,14 +225,11 @@ h1 {
   align-items: center;
 
   text-align: center;
-  font-size: 13px;
+  font-size: clamp(9px, 1.5vw, 14px);
+
   position: relative;
   padding: 3px;
-}
-
-.event-cell {
-  background: #ffe6b8;
-  border: 2px solid #f0ad4e;
+  overflow: hidden;
 }
 
 .start-cell {
@@ -139,47 +237,204 @@ h1 {
   border: 2px solid #78b878;
 }
 
-.center-area {
-  grid-column: 2 / 7;
-  grid-row: 2 / 7;
-
-  background: #edf3ff;
-  border-radius: 15px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-  color: #6079a5;
-  font-size: 20px;
-  font-weight: bold;
+.event-cell {
+  background: #ffe6b8;
+  border: 2px solid #f0ad4e;
 }
 
 .players {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 2px;
+  align-items: center;
+  gap: 1px;
+
   margin-top: 3px;
-  font-size: 20px;
+  font-size: clamp(16px, 2.5vw, 25px);
 }
 
-/* =========================
-   右側資訊
-========================= */
+/* ========================================
+   地圖中央
+======================================== */
 
-.side-panel {
-  width: 300px;
+.center-area {
+  grid-column: 2 / 7;
+  grid-row: 2 / 7;
+
+  background: #edf3ff;
+  border-radius: 12px;
+
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  color: #6079a5;
+  font-weight: bold;
 }
+
+/* ========================================
+   立體骰子
+======================================== */
+
+.dice-button {
+  width: 120px;
+  height: 120px;
+  border: none;
+  background: transparent;
+  perspective: 700px;
+  cursor: pointer;
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dice-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.dice-button:not(:disabled):hover .dice-cube {
+  transform: translateY(-6px) scale(1.08) rotateX(-8deg) rotateY(10deg);
+}
+
+.dice-button:not(:disabled):active .dice-cube {
+  transform: scale(0.92);
+}
+
+.dice-cube {
+  width: 76px;
+  height: 76px;
+  position: relative;
+  transform-style: preserve-3d;
+  margin: auto;
+  transition: transform 0.35s ease;
+  filter: drop-shadow(0 10px 8px rgba(50,70,110,0.25));
+}
+
+.dice-face {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fd 45%, #dce3f1 100%);
+  border: 3px solid #50699d;
+  border-radius: 16px;
+  color: #344b7b;
+  font-size: 48px;
+  box-shadow:
+    inset 3px 3px 5px rgba(255,255,255,0.95),
+    inset -4px -4px 7px rgba(90,110,150,0.22),
+    0 4px 8px rgba(60,80,120,0.18);
+}
+
+.dice-front {
+  transform: translateZ(38px);
+}
+
+.dice-back {
+  transform: rotateY(180deg) translateZ(38px);
+}
+
+.dice-right {
+  transform: rotateY(90deg) translateZ(38px);
+}
+
+.dice-left {
+  transform: rotateY(-90deg) translateZ(38px);
+}
+
+.dice-top {
+  transform: rotateX(90deg) translateZ(38px);
+}
+
+.dice-bottom {
+  transform: rotateX(-90deg) translateZ(38px);
+}
+
+.dice-rolling {
+  animation: diceRoll 0.9s cubic-bezier(.25,.7,.3,1);
+}
+
+@keyframes diceRoll {
+
+  0% {
+    transform:
+      rotateX(0deg)
+      rotateY(0deg)
+      rotateZ(0deg)
+      scale(1);
+  }
+
+  20% {
+    transform:
+      rotateX(180deg)
+      rotateY(160deg)
+      rotateZ(80deg)
+      scale(1.08);
+  }
+
+  40% {
+    transform:
+      rotateX(380deg)
+      rotateY(330deg)
+      rotateZ(170deg)
+      scale(0.94);
+  }
+
+  60% {
+    transform:
+      rotateX(570deg)
+      rotateY(510deg)
+      rotateZ(250deg)
+      scale(1.08);
+  }
+
+  80% {
+    transform:
+      rotateX(720deg)
+      rotateY(650deg)
+      rotateZ(320deg)
+      scale(0.97);
+  }
+
+  100% {
+    transform:
+      rotateX(900deg)
+      rotateY(800deg)
+      rotateZ(360deg)
+      scale(1);
+  }
+
+}
+
+#diceNumber {
+  margin-top: 8px;
+  min-height: 28px;
+  font-size: 19px;
+  color: #526fa9;
+  font-weight: bold;
+}
+
+#turnText {
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+/* ========================================
+   右側資訊
+======================================== */
 
 .info-box {
   background: white;
   border-radius: 15px;
   padding: 18px;
+  margin-bottom: 15px;
   box-shadow: 0 3px 12px rgba(0,0,0,0.08);
 }
 
@@ -190,76 +445,18 @@ h1 {
 }
 
 .info-box h3 {
-  margin-bottom: 5px;
   color: #657fb2;
+  margin-bottom: 5px;
 }
 
 .info-box ul {
   padding-left: 22px;
   line-height: 1.7;
-  margin-top: 5px;
 }
 
-.turn-box {
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold;
-  background: #eef4ff;
-}
-
-#playerInfo {
-  line-height: 1.7;
-}
-
-.player-card {
-  margin: 8px 0;
-  padding: 9px;
-  background: #f5f7fc;
-  border-radius: 10px;
-}
-
-.player-card.current {
-  border: 2px solid #6685c5;
-  background: #eaf0ff;
-}
-
-.badges {
-  font-size: 16px;
-}
-
-/* =========================
-   骰子
-========================= */
-
-#diceArea {
-  margin: 20px auto;
-  text-align: center;
-}
-
-#rollDice {
-  padding: 12px 30px;
-  border: none;
-  border-radius: 10px;
-  background: #6685c5;
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-#rollDice:disabled {
-  background: #aaa;
-  cursor: not-allowed;
-}
-
-#diceResult {
-  margin-top: 10px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-/* =========================
-   卡片彈窗
-========================= */
+/* ========================================
+   卡片
+======================================== */
 
 #cardOverlay {
   display: none;
@@ -278,18 +475,88 @@ h1 {
 .card-box {
   width: 90%;
   max-width: 500px;
+
   background: white;
 
   padding: 25px;
+
   border-radius: 20px;
 
-  box-shadow: 0 5px 25px rgba(0,0,0,0.2);
-
   text-align: center;
+
+  box-shadow: 0 5px 25px rgba(0,0,0,0.2);
 }
 
 .card-box h2 {
   color: #526fa9;
+}
+
+/* 抽卡動畫 */
+
+#cardDrawVisual {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+  margin-bottom: 5px;
+}
+
+#cardDrawVisual.show {
+  display: flex;
+}
+
+.draw-card-back {
+  width: 78px;
+  height: 105px;
+  border-radius: 12px;
+  border: 3px solid #6685c5;
+  background: linear-gradient(135deg, #dce7ff, #8ca6df);
+  box-shadow: 0 8px 18px rgba(70,90,140,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  animation: cardDraw 1.0s ease-in-out infinite;
+}
+
+@keyframes cardDraw {
+
+  0%, 100% {
+    transform:
+      translateY(12px)
+      rotate(-7deg)
+      scale(0.94);
+  }
+
+  50% {
+    transform:
+      translateY(-10px)
+      rotate(7deg)
+      scale(1.05);
+  }
+
+}
+
+.card-box.card-reveal {
+  animation: cardReveal 0.38s ease-out;
+}
+
+@keyframes cardReveal {
+
+  0% {
+    transform:
+      scale(0.82)
+      rotateY(90deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform:
+      scale(1)
+      rotateY(0deg);
+    opacity: 1;
+  }
+
 }
 
 #cardText {
@@ -300,13 +567,16 @@ h1 {
 
 .quiz-option {
   width: 100%;
+
   margin: 7px 0;
+
   padding: 11px;
 
   border: 1px solid #cbd5e8;
   border-radius: 10px;
 
   background: #f5f7fc;
+
   cursor: pointer;
 
   font-size: 16px;
@@ -322,6 +592,7 @@ h1 {
 
 #closeCard {
   margin-top: 15px;
+
   padding: 10px 25px;
 
   border: none;
@@ -333,9 +604,9 @@ h1 {
   cursor: pointer;
 }
 
-/* =========================
+/* ========================================
    勝利畫面
-========================= */
+======================================== */
 
 #winOverlay {
   display: none;
@@ -356,9 +627,11 @@ h1 {
   max-width: 500px;
 
   background: white;
+
   padding: 30px;
 
   border-radius: 20px;
+
   text-align: center;
 }
 
@@ -369,38 +642,100 @@ h1 {
 
 #restartGame {
   padding: 12px 25px;
+
   border: none;
   border-radius: 10px;
 
   background: #6685c5;
+
   color: white;
 
   font-size: 17px;
+
   cursor: pointer;
 }
 
-/* =========================
+/* ========================================
    手機版
-========================= */
+======================================== */
 
 @media (max-width: 900px) {
 
   .game-layout {
     flex-direction: column;
-    align-items: center;
-  }
-
-  #board {
-    width: 95vw;
-    height: 95vw;
-    max-width: 650px;
-    max-height: 650px;
   }
 
   .side-panel {
-    width: 95%;
-    max-width: 650px;
+    width: 100%;
   }
+
+  .board-area {
+    width: 100%;
+  }
+
+  #board {
+    width: 100%;
+  }
+
+  #playerInfo {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .side-panel {
+    order: 2;
+  }
+
+}
+
+@media (max-width: 500px) {
+
+  #playerInfo {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .player-card {
+    font-size: 13px;
+  }
+
+  .dice-button {
+    width: 80px;
+    height: 80px;
+  }
+
+  .dice-cube,
+  .dice-face {
+    width: 58px;
+    height: 58px;
+  }
+
+  .dice-face {
+    font-size: 37px;
+  }
+
+  .dice-front {
+    transform: translateZ(29px);
+  }
+
+  .dice-back {
+    transform: rotateY(180deg) translateZ(29px);
+  }
+
+  .dice-right {
+    transform: rotateY(90deg) translateZ(29px);
+  }
+
+  .dice-left {
+    transform: rotateY(-90deg) translateZ(29px);
+  }
+
+  .dice-top {
+    transform: rotateX(90deg) translateZ(29px);
+  }
+
+  .dice-bottom {
+    transform: rotateX(-90deg) translateZ(29px);
+  }
+
 }
 </style>
 </head>
@@ -409,229 +744,186 @@ h1 {
 
 <h1>👁️ 視力保健大富翁</h1>
 
-<!-- =========================
+<!-- ==================================================
      遊戲設定
-========================= -->
+================================================== -->
 
 <div id="setup">
 
-  <h2>遊戲設定</h2>
+  <h2>🎮 遊戲設定</h2>
 
   <p>請選擇遊戲人數：</p>
 
-  <div>
-    <button class="player-count selected" data-count="2">2 人</button>
-    <button class="player-count" data-count="3">3 人</button>
-    <button class="player-count" data-count="4">4 人</button>
-  </div>
+  <button class="player-count selected" data-count="2">
+    2 人
+  </button>
+
+  <button class="player-count" data-count="3">
+    3 人
+  </button>
+
+  <button class="player-count" data-count="4">
+    4 人
+  </button>
 
   <div id="playerSettings"></div>
 
-  <button id="startGame">開始遊戲</button>
+  <button id="startGame">
+    確認設定
+  </button>
 
 </div>
 
+<!-- ==================================================
+     規則畫面
+================================================== -->
 
-<!-- =========================
+<div id="rulesScreen">
+
+  <h2>📖 遊戲規則</h2>
+
+  <div class="rules-content">
+
+    <h3>🎲 玩法</h3>
+
+    <ul>
+      <li>輪流點擊骰子，依照骰子點數前進。</li>
+      <li>走到 🎴 事件格時，會隨機抽取事件卡或問答卡。</li>
+      <li>答對問答可獲得對應徽章，答錯則不會獲得徽章。</li>
+      <li>事件卡可能讓玩家前進、後退或休息。</li>
+      <li>機器人會自動擲骰與回答問題。</li>
+    </ul>
+
+    <h3>🏅 徽章</h3>
+
+    <ul>
+      <li>👁️ 視力保健</li>
+      <li>📱 3C 使用</li>
+      <li>📖 閱讀習慣</li>
+      <li>🌳 戶外生活</li>
+    </ul>
+
+    <h3>🏆 獲勝條件</h3>
+
+    <ul>
+      <li>🌟 四種徽章各至少獲得 1 枚。</li>
+      <li>🏅 任一類別徽章累積至 4 枚。</li>
+    </ul>
+
+    <p>
+      <strong>符合任一條件即可獲勝！</strong>
+    </p>
+
+  </div>
+
+  <button id="enterGame">
+    🎮 開始遊戲
+  </button>
+
+</div>
+
+<!-- ==================================================
      遊戲本體
-========================= -->
+================================================== -->
 
 <div id="game">
 
-  <div class="game-layout">
+  <div class="game-container">
 
-    <!-- 棋盤 -->
-    <div>
+    <div class="score-box">
 
-      <div id="board">
+      <h2>🏆 玩家計分表</h2>
 
-        <div class="cell start-cell" id="cell0">
-          0<br>🏁 起點
-          <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell1">
-          1<br>休息區
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell2">
-          2<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell3">
-          3<br>喝水
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell4">
-          4<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell5">
-          5<br>眺望遠方
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell6">
-          6<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell7">
-          7<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell8">
-          8<br>眨眼
-          <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell9">
-          9<br>閱讀
-          <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell10">
-          10<br>休息
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell11">
-          11<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell12">
-          12<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell13">
-          13<br>戶外活動
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell14">
-          14<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell15">
-          15<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell16">
-          16<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell17">
-          17<br>護眼操
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell18">
-          18<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell19">
-          19<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell20">
-          20<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell21">
-          21<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="cell" id="cell22">
-          22<br>戶外活動
-          <div class="players"></div>
-        </div>
-
-        <div class="cell event-cell" id="cell23">
-          23<br>🎴 事件格
-          <div class="players"></div>
-        </div>
-
-        <div class="center-area">
-          👁️<br>
-          視力保健大富翁
-        </div>
-
-      </div>
-
-      <div id="diceArea">
-
-        <button id="rollDice">🎲 擲骰子</button>
-
-        <div id="diceResult"></div>
-
-      </div>
+      <div id="playerInfo"></div>
 
     </div>
 
+    <div class="game-layout">
 
-    <!-- =========================
-         右側資訊欄
-    ========================= -->
+      <div class="board-area">
 
-    <div class="side-panel">
+        <div id="board">
 
-      <div class="info-box turn-box">
-        現在輪到：<span id="currentTurn"></span>
+          <div class="center-area">
+
+            <div style="font-size:20px;">
+              👁️ 視力保健大富翁
+            </div>
+
+            <button
+              id="diceButton"
+              class="dice-button"
+              aria-label="擲骰子"
+            >
+
+              <div id="diceCube" class="dice-cube">
+
+                <div class="dice-face dice-front">
+                  ⚀
+                </div>
+
+                <div class="dice-face dice-back">
+                  ⚁
+                </div>
+
+                <div class="dice-face dice-right">
+                  ⚂
+                </div>
+
+                <div class="dice-face dice-left">
+                  ⚃
+                </div>
+
+                <div class="dice-face dice-top">
+                  ⚄
+                </div>
+
+                <div class="dice-face dice-bottom">
+                  ⚅
+                </div>
+
+              </div>
+
+            </button>
+
+            <div id="diceNumber">
+              點一下骰子
+            </div>
+
+            <div id="turnText"></div>
+
+          </div>
+
+        </div>
+
       </div>
 
+      <div class="side-panel">
 
-      <!-- 玩法＆獲勝條件 -->
+        <div class="info-box">
 
-      <div class="info-box">
+          <h3>🎲 玩法</h3>
 
-        <h2>📖 玩法 & 獲勝條件</h2>
+          <ul>
+            <li>輪流點擊骰子，依照骰子點數前進。</li>
+            <li>走到 🎴 事件格時，會隨機抽取事件卡或問答卡。</li>
+            <li>答對問答可獲得對應徽章，答錯則不會獲得徽章。</li>
+            <li>事件卡可能讓玩家前進、後退或休息。</li>
+            <li>機器人會自動擲骰與回答問題。</li>
+          </ul>
 
-        <h3>🎲 玩法</h3>
+          <h3>🏆 獲勝條件</h3>
 
-        <ul>
-          <li>輪流擲骰子，依照點數前進。</li>
-          <li>走到 🎴 事件格時，會隨機抽取事件卡或問答卡。</li>
-          <li>答對問答可獲得該類別徽章。</li>
-          <li>答錯不會扣除徽章。</li>
-          <li>事件卡可能讓你前進、後退或休息。</li>
-          <li>機器人會自動擲骰及進行答題。</li>
-        </ul>
+          <ul>
+            <li>四種徽章各至少 1 枚。</li>
+            <li>任一類別徽章達到 4 枚。</li>
+          </ul>
 
-        <h3>🏆 獲勝條件</h3>
+          <p>
+            <strong>符合任一條件即可獲勝！</strong>
+          </p>
 
-        <ul>
-          <li>🌟 四種徽章各獲得至少 1 枚。</li>
-          <li>🏅 任一類別徽章累積至 4 枚。</li>
-        </ul>
-
-        <p>
-          <strong>符合任一條件即可獲勝！</strong>
-        </p>
-
-      </div>
-
-
-      <!-- 玩家資訊 -->
-
-      <div class="info-box">
-
-        <h2>👥 玩家資訊</h2>
-
-        <div id="playerInfo"></div>
+        </div>
 
       </div>
 
@@ -641,14 +933,21 @@ h1 {
 
 </div>
 
-
-<!-- =========================
+<!-- ==================================================
      卡片視窗
-========================= -->
+================================================== -->
 
 <div id="cardOverlay">
 
   <div class="card-box">
+
+    <div id="cardDrawVisual">
+
+      <div class="draw-card-back">
+        🎴
+      </div>
+
+    </div>
 
     <h2 id="cardTitle"></h2>
 
@@ -656,16 +955,17 @@ h1 {
 
     <div id="quizOptions"></div>
 
-    <button id="closeCard">關閉</button>
+    <button id="closeCard">
+      關閉
+    </button>
 
   </div>
 
 </div>
 
-
-<!-- =========================
-     勝利視窗
-========================= -->
+<!-- ==================================================
+     勝利畫面
+================================================== -->
 
 <div id="winOverlay">
 
@@ -679,227 +979,799 @@ h1 {
 
     <br>
 
-    <button id="restartGame">重新開始</button>
+    <button id="restartGame">
+      重新開始
+    </button>
 
   </div>
 
 </div>
 
-
 <script>
 
-/* =========================================================
-   玩家設定
-========================================================= */
+/* ==================================================
+   基本資料
+================================================== */
 
-const playerIcons = ["🧍", "🐱", "🐰", "🐻"];
-
-let playerCount = 2;
-
-let players = [];
-
-let currentPlayerIndex = 0;
-
-let gameOver = false;
-
-let currentQuiz = null;
-
-let moving = false;
-
-
-/* =========================================================
-   徽章類別
-========================================================= */
+const playerIcons = [
+  "🧍",
+  "🐱",
+  "🐰",
+  "🐻"
+];
 
 const badgeTypes = [
+
   {
     name: "視力保健",
     icon: "👁️"
   },
+
   {
     name: "3C使用",
     icon: "📱"
   },
+
   {
     name: "閱讀習慣",
     icon: "📖"
   },
+
   {
     name: "戶外生活",
     icon: "🌳"
   }
+
+];
+
+let playerCount = 2;
+let players = [];
+let currentPlayerIndex = 0;
+let gameOver = false;
+let moving = false;
+let currentQuiz = null;
+let cardClosing = false;
+
+
+/* ==================================================
+   24 格資料
+================================================== */
+
+const cellNames = [
+
+  "🏁 起點",
+  "休息區",
+  "🎴 事件格",
+  "喝水",
+  "🎴 事件格",
+  "眺望遠方",
+  "🎴 事件格",
+  "🎴 事件格",
+  "眨眼",
+  "閱讀",
+  "休息",
+  "🎴 事件格",
+  "🎴 事件格",
+  "戶外活動",
+  "🎴 事件格",
+  "🎴 事件格",
+  "🎴 事件格",
+  "護眼操",
+  "🎴 事件格",
+  "🎴 事件格",
+  "🎴 事件格",
+  "🎴 事件格",
+  "戶外活動",
+  "🎴 事件格"
+
+];
+
+/*
+  真正的外圈順序：
+
+  0 → 1 → 2 → 3 → 4 → 5 → 6
+  ↓                               ↓
+  23                              7
+  ↓                               ↓
+  22                              8
+  ↓                               ↓
+  21                              9
+  ↓                               ↓
+  20                              10
+  ↓                               ↓
+  19                              11
+  ↓                               ↓
+  18 → 17 → 16 → 15 → 14 → 13 → 12
+
+  然後回到 0
+*/
+
+const boardPositions = [
+
+  [1,1],
+  [1,2],
+  [1,3],
+  [1,4],
+  [1,5],
+  [1,6],
+
+  [2,7],
+  [3,7],
+  [4,7],
+  [5,7],
+  [6,7],
+  [7,7],
+
+  [7,6],
+  [7,5],
+  [7,4],
+  [7,3],
+  [7,2],
+  [7,1],
+
+  [6,1],
+  [5,1],
+  [4,1],
+  [3,1],
+  [2,1],
+  [1,1]
+
+];
+
+const actualBoardPositions = [
+
+  [1,1],
+  [1,2],
+  [1,3],
+  [1,4],
+  [1,5],
+  [1,6],
+  [1,7],
+
+  [2,7],
+  [3,7],
+  [4,7],
+  [5,7],
+  [6,7],
+  [7,7],
+
+  [7,6],
+  [7,5],
+  [7,4],
+  [7,3],
+  [7,2],
+  [7,1],
+
+  [6,1],
+  [5,1],
+  [4,1],
+  [3,1],
+  [2,1]
+
 ];
 
 
-/* =========================================================
-   玩家設定畫面
-========================================================= */
+/* 事件格 */
+
+const eventCells = [
+  2, 4, 6, 7,
+  12, 14, 16, 18,
+  19, 20, 21, 23
+];
+
+
+/* ==================================================
+   建立棋盤
+================================================== */
+
+function createBoard() {
+
+  const board =
+    document.getElementById("board");
+
+  const center =
+    board.querySelector(".center-area");
+
+  for (let i = 0; i < 24; i++) {
+
+    const cell =
+      document.createElement("div");
+
+    cell.className = "cell";
+
+    cell.id = `cell${i}`;
+
+    cell.style.gridRow =
+      actualBoardPositions[i][0];
+
+    cell.style.gridColumn =
+      actualBoardPositions[i][1];
+
+    if (i === 0) {
+      cell.classList.add("start-cell");
+    }
+
+    if (eventCells.includes(i)) {
+      cell.classList.add("event-cell");
+    }
+
+    cell.innerHTML = `
+      <div>
+        ${i}<br>
+        ${cellNames[i]}
+      </div>
+
+      <div class="players"></div>
+    `;
+
+    board.appendChild(cell);
+
+  }
+
+  board.appendChild(center);
+
+}
+
+createBoard();
+
+
+/* ==================================================
+   玩家設定
+================================================== */
 
 function renderPlayerSettings() {
 
-  const container = document.getElementById("playerSettings");
+  const container =
+    document.getElementById("playerSettings");
 
   container.innerHTML = "";
 
-  for (let i = 1; i < playerCount; i++) {
+  for (
+    let i = 1;
+    i < playerCount;
+    i++
+  ) {
 
-    const div = document.createElement("div");
+    const div =
+      document.createElement("div");
 
-    div.className = "player-setting";
+    div.className =
+      "player-setting";
 
     div.innerHTML = `
-      <strong>${playerIcons[i]} 玩家 ${i + 1}</strong><br><br>
+
+      <strong>
+        ${playerIcons[i]} 玩家 ${i + 1}
+      </strong>
+
+      <br><br>
 
       <button
         class="type-btn selected"
         data-player="${i}"
         data-type="bot">
+
         🤖 機器人
+
       </button>
 
       <button
         class="type-btn"
         data-player="${i}"
         data-type="human">
+
         🧍 玩家
+
       </button>
+
     `;
 
     container.appendChild(div);
+
   }
 
-  document.querySelectorAll(".type-btn").forEach(button => {
 
-    button.addEventListener("click", () => {
+  document
+    .querySelectorAll(".type-btn")
+    .forEach(button => {
 
-      const player = button.dataset.player;
+      button.addEventListener(
+        "click",
+        () => {
 
-      document
-        .querySelectorAll(`.type-btn[data-player="${player}"]`)
-        .forEach(btn => btn.classList.remove("selected"));
+          const player =
+            button.dataset.player;
 
-      button.classList.add("selected");
+          document
+            .querySelectorAll(
+              `.type-btn[data-player="${player}"]`
+            )
+            .forEach(btn => {
+
+              btn.classList.remove("selected");
+
+            });
+
+          button.classList.add("selected");
+
+        }
+      );
 
     });
+
+}
+
+
+/* ==================================================
+   玩家人數
+================================================== */
+
+document
+  .querySelectorAll(".player-count")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        document
+          .querySelectorAll(".player-count")
+          .forEach(btn =>
+            btn.classList.remove("selected")
+          );
+
+        button.classList.add("selected");
+
+        playerCount =
+          Number(button.dataset.count);
+
+        renderPlayerSettings();
+
+      }
+    );
+
+  });
+
+renderPlayerSettings();
+
+
+/* ==================================================
+   確認設定 → 規則
+================================================== */
+
+document
+  .getElementById("startGame")
+  .addEventListener(
+    "click",
+    () => {
+
+      players = [];
+
+      /*
+        玩家 1 永遠是真人
+      */
+
+      players.push({
+
+        name: "玩家 1",
+
+        icon: playerIcons[0],
+
+        type: "human",
+
+        position: 0,
+
+        badges: [0,0,0,0],
+
+        rest: false
+
+      });
+
+
+      /*
+        玩家 2～4
+      */
+
+      for (
+        let i = 1;
+        i < playerCount;
+        i++
+      ) {
+
+        const selected =
+          document.querySelector(
+            `.type-btn[data-player="${i}"].selected`
+          );
+
+        const type =
+          selected
+            ? selected.dataset.type
+            : "bot";
+
+        players.push({
+
+          name: `玩家 ${i + 1}`,
+
+          icon: playerIcons[i],
+
+          type: type,
+
+          position: 0,
+
+          badges: [0,0,0,0],
+
+          rest: false
+
+        });
+
+      }
+
+      currentPlayerIndex = 0;
+      gameOver = false;
+
+      document
+        .getElementById("setup")
+        .style.display = "none";
+
+      document
+        .getElementById("rulesScreen")
+        .style.display = "block";
+
+    }
+  );
+
+
+/* ==================================================
+   進入遊戲
+================================================== */
+
+document
+  .getElementById("enterGame")
+  .addEventListener(
+    "click",
+    () => {
+
+      document
+        .getElementById("rulesScreen")
+        .style.display = "none";
+
+      document
+        .getElementById("game")
+        .style.display = "block";
+
+      updateBoard();
+      updatePlayerInfo();
+      updateTurn();
+
+      setTimeout(
+        checkBotTurn,
+        500
+      );
+
+    }
+  );
+
+
+/* ==================================================
+   更新棋盤上的玩家
+================================================== */
+
+function updateBoard() {
+
+  document
+    .querySelectorAll(".players")
+    .forEach(
+      div => div.innerHTML = ""
+    );
+
+
+  players.forEach(player => {
+
+    const cell =
+      document.getElementById(
+        `cell${player.position}`
+      );
+
+    if (!cell) return;
+
+    const playerDiv =
+      cell.querySelector(".players");
+
+    const span =
+      document.createElement("span");
+
+    span.textContent =
+      player.icon;
+
+    playerDiv.appendChild(span);
 
   });
 
 }
 
 
-/* 玩家人數按鈕 */
+/* ==================================================
+   更新計分表
+================================================== */
 
-document.querySelectorAll(".player-count").forEach(button => {
+function updatePlayerInfo() {
 
-  button.addEventListener("click", () => {
+  const container =
+    document.getElementById("playerInfo");
 
-    document
-      .querySelectorAll(".player-count")
-      .forEach(btn => btn.classList.remove("selected"));
-
-    button.classList.add("selected");
-
-    playerCount = Number(button.dataset.count);
-
-    renderPlayerSettings();
-
-  });
-
-});
+  container.innerHTML = "";
 
 
-renderPlayerSettings();
+  players.forEach(
+    (player, index) => {
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "player-card";
 
 
-/* =========================================================
-   開始遊戲
-========================================================= */
+      if (
+        index === currentPlayerIndex
+      ) {
 
-document.getElementById("startGame").addEventListener("click", () => {
+        div.classList.add("current");
 
-  players = [];
-
-  /* 玩家1固定為真人 */
-
-  players.push({
-    name: "玩家 1",
-    icon: playerIcons[0],
-    type: "human",
-    position: 0,
-    badges: [0, 0, 0, 0],
-    rest: false
-  });
+      }
 
 
-  /* 玩家2～4 */
+      let badgeText = "";
 
-  for (let i = 1; i < playerCount; i++) {
+      badgeTypes.forEach(
+        (badge, i) => {
 
-    const selected = document.querySelector(
-      `.type-btn[data-player="${i}"].selected`
+          badgeText +=
+            `${badge.icon}${player.badges[i]} `;
+
+        }
+      );
+
+
+      div.innerHTML = `
+
+        <strong>
+          ${player.icon}
+          ${player.name}
+          ${player.type === "bot"
+            ? "🤖"
+            : "🧍"}
+        </strong>
+
+        <br>
+
+        位置：${player.position}
+
+        <br>
+
+        徽章：
+
+        <span class="badges">
+          ${badgeText}
+        </span>
+
+      `;
+
+
+      container.appendChild(div);
+
+    }
+  );
+
+}
+
+
+/* ==================================================
+   更新回合
+================================================== */
+
+function updateTurn() {
+
+  const player =
+    players[currentPlayerIndex];
+
+  document.getElementById(
+    "turnText"
+  ).textContent =
+    `現在輪到：${player.icon} ${player.name}`;
+
+  updatePlayerInfo();
+
+}
+
+
+/* ==================================================
+   骰子
+================================================== */
+
+const diceButton =
+  document.getElementById("diceButton");
+
+const diceCube =
+  document.getElementById("diceCube");
+
+const diceNumber =
+  document.getElementById("diceNumber");
+
+diceButton.addEventListener(
+  "click",
+  () => {
+
+    if (gameOver) return;
+
+    const player =
+      players[currentPlayerIndex];
+
+    if (player.type !== "human") return;
+
+    rollDice();
+
+  }
+);
+
+
+/* ==================================================
+   擲骰
+================================================== */
+
+function rollDice() {
+
+  if (
+    gameOver ||
+    moving
+  ) return;
+
+
+  const player =
+    players[currentPlayerIndex];
+
+
+  if (player.rest) {
+
+    player.rest = false;
+
+    diceNumber.textContent =
+      "😴 本回合休息";
+
+    setTimeout(
+      nextTurn,
+      1000
     );
 
-    const type = selected
-      ? selected.dataset.type
-      : "bot";
-
-    players.push({
-
-      name: `玩家 ${i + 1}`,
-
-      icon: playerIcons[i],
-
-      type: type,
-
-      position: 0,
-
-      badges: [0, 0, 0, 0],
-
-      rest: false
-
-    });
+    return;
 
   }
 
 
-  currentPlayerIndex = 0;
+  moving = true;
 
-  gameOver = false;
+  diceButton.disabled = true;
 
-  document.getElementById("setup").style.display = "none";
+  diceCube.classList.remove(
+    "dice-rolling"
+  );
 
-  document.getElementById("game").style.display = "block";
+  void diceCube.offsetWidth;
 
-  updateBoard();
-
-  updatePlayerInfo();
-
-  updateTurn();
-
-  setTimeout(checkBotTurn, 800);
-
-});
+  diceCube.classList.add(
+    "dice-rolling"
+  );
 
 
-/* =========================================================
-   事件格
-========================================================= */
-
-const eventCells = [
-  2, 4, 6, 7,
-  12, 14, 16,
-  18, 19, 20, 21, 23
-];
+  const dice =
+    Math.floor(
+      Math.random() * 6
+    ) + 1;
 
 
-/* =========================================================
-   20 張普通事件卡
-========================================================= */
+  setTimeout(
+    () => {
+
+      diceNumber.textContent =
+        `🎲 擲出：${dice}`;
+
+      /*
+        先讓玩家看清楚骰子結果
+      */
+
+      setTimeout(
+        () => {
+
+          movePlayer(
+            player,
+            dice
+          );
+
+        },
+        800
+      );
+
+    },
+    900
+  );
+
+}
+
+
+/* ==================================================
+   移動玩家
+================================================== */
+
+function movePlayer(
+  player,
+  steps
+) {
+
+  let moved = 0;
+
+
+  const timer =
+    setInterval(
+      () => {
+
+        player.position =
+          (player.position + 1) % 24;
+
+        moved++;
+
+        updateBoard();
+
+
+        if (
+          moved >= steps
+        ) {
+
+          clearInterval(timer);
+
+
+          setTimeout(
+            () => {
+
+              moving = false;
+
+
+              if (
+                eventCells.includes(
+                  player.position
+                )
+              ) {
+
+                drawCard();
+
+              }
+
+              else {
+
+                nextTurn();
+
+              }
+
+            },
+            350
+          );
+
+        }
+
+      },
+      220
+    );
+
+}
+
+
+/* ==================================================
+   事件卡
+================================================== */
 
 const eventCards = [
 
   {
-    text: "你今天有乖乖讓眼睛休息，向前前進 2 格！",
+    text: "你今天有乖乖讓眼睛休息，前進 2 格！",
     effect: "move",
     value: 2
   },
@@ -1021,14 +1893,13 @@ const eventCards = [
 ];
 
 
-/* =========================================================
-   40 張問答卡
-   每種類別 10 張
-========================================================= */
+/* ==================================================
+   問答卡
+================================================== */
 
 const quizCards = [
 
-  /* ===== 👁️ 視力保健 10 ===== */
+  /* 👁️ 視力保健 */
 
   {
     type: 0,
@@ -1151,7 +2022,7 @@ const quizCards = [
   },
 
 
-  /* ===== 📱 3C 使用 10 ===== */
+  /* 📱 3C 使用 */
 
   {
     type: 1,
@@ -1274,7 +2145,7 @@ const quizCards = [
   },
 
 
-  /* ===== 📖 閱讀習慣 10 ===== */
+  /* 📖 閱讀習慣 */
 
   {
     type: 2,
@@ -1397,7 +2268,7 @@ const quizCards = [
   },
 
 
-  /* ===== 🌳 戶外生活 10 ===== */
+  /* 🌳 戶外生活 */
 
   {
     type: 3,
@@ -1522,643 +2393,809 @@ const quizCards = [
 ];
 
 
-/* =========================================================
-   更新棋盤
-========================================================= */
-
-function updateBoard() {
-
-  document.querySelectorAll(".players").forEach(
-    div => div.innerHTML = ""
-  );
-
-  players.forEach(player => {
-
-    const cell = document.getElementById(
-      `cell${player.position}`
-    );
-
-    if (cell) {
-
-      const playerDiv = cell.querySelector(".players");
-
-      const span = document.createElement("span");
-
-      span.textContent = player.icon;
-
-      playerDiv.appendChild(span);
-
-    }
-
-  });
-
-}
-
-
-/* =========================================================
-   玩家資訊
-========================================================= */
-
-function updatePlayerInfo() {
-
-  const container = document.getElementById("playerInfo");
-
-  container.innerHTML = "";
-
-  players.forEach((player, index) => {
-
-    const div = document.createElement("div");
-
-    div.className = "player-card";
-
-    if (index === currentPlayerIndex) {
-      div.classList.add("current");
-    }
-
-    let badgeText = "";
-
-    badgeTypes.forEach((badge, i) => {
-
-      badgeText +=
-        `${badge.icon}${player.badges[i]} `;
-
-    });
-
-    div.innerHTML = `
-      <strong>
-        ${player.icon} ${player.name}
-        ${player.type === "bot" ? "🤖" : "🧍"}
-      </strong>
-
-      <br>
-
-      位置：${player.position}
-
-      <br>
-
-      徽章：
-      <span class="badges">
-        ${badgeText}
-      </span>
-    `;
-
-    container.appendChild(div);
-
-  });
-
-}
-
-
-/* =========================================================
-   更新目前回合
-========================================================= */
-
-function updateTurn() {
-
-  const player = players[currentPlayerIndex];
-
-  document.getElementById("currentTurn").textContent =
-    `${player.icon} ${player.name}`;
-
-  updatePlayerInfo();
-
-}
-
-
-/* =========================================================
-   擲骰子
-========================================================= */
-
-document.getElementById("rollDice").addEventListener(
-  "click",
-  rollDice
-);
-
-
-function rollDice() {
-
-  if (gameOver || moving) return;
-
-  const player = players[currentPlayerIndex];
-
-  if (player.type !== "human") return;
-
-  if (player.rest) {
-
-    player.rest = false;
-
-    document.getElementById("diceResult").textContent =
-      "😴 本回合休息，跳過擲骰。";
-
-    setTimeout(nextTurn, 1000);
-
-    return;
-  }
-
-  performRoll();
-
-}
-
-
-/* =========================================================
-   實際擲骰
-========================================================= */
-
-function performRoll() {
-
-  if (gameOver || moving) return;
-
-  moving = true;
-
-  const player = players[currentPlayerIndex];
-
-  const dice = Math.floor(Math.random() * 6) + 1;
-
-  document.getElementById("diceResult").textContent =
-    `🎲 ${player.name} 擲出了 ${dice} 點！`;
-
-  let steps = 0;
-
-  const moveInterval = setInterval(() => {
-
-    player.position =
-      (player.position + 1) % 24;
-
-    steps++;
-
-    updateBoard();
-
-    if (steps >= dice) {
-
-      clearInterval(moveInterval);
-
-      moving = false;
-
-      setTimeout(() => {
-
-        if (eventCells.includes(player.position)) {
-
-          drawCard();
-
-        } else {
-
-          nextTurn();
-
-        }
-
-      }, 500);
-
-    }
-
-  }, 250);
-
-}
-
-
-/* =========================================================
+/* ==================================================
    抽卡
-========================================================= */
+================================================== */
 
 function drawCard() {
 
-  const isQuiz = Math.random() < 0.67;
+  const overlay =
+    document.getElementById("cardOverlay");
 
-  if (isQuiz) {
+  const cardBox =
+    overlay.querySelector(".card-box");
 
-    drawQuizCard();
+  const drawVisual =
+    document.getElementById("cardDrawVisual");
 
-  } else {
+  const cardTitle =
+    document.getElementById("cardTitle");
 
-    drawEventCard();
+  const cardText =
+    document.getElementById("cardText");
 
-  }
+  const quizOptions =
+    document.getElementById("quizOptions");
+
+  const closeButton =
+    document.getElementById("closeCard");
+
+
+  cardBox.classList.remove(
+    "card-reveal"
+  );
+
+  drawVisual.classList.add("show");
+
+  cardTitle.textContent =
+    "🎴 抽卡中…";
+
+  cardText.textContent =
+    "看看這次抽到了什麼！";
+
+  quizOptions.innerHTML = "";
+
+  closeButton.style.display =
+    "none";
+
+  overlay.style.display =
+    "flex";
+
+
+  /*
+    抽卡動畫維持約 1.3 秒
+  */
+
+  setTimeout(
+    () => {
+
+      drawVisual.classList.remove(
+        "show"
+      );
+
+      cardBox.classList.remove(
+        "card-reveal"
+      );
+
+      void cardBox.offsetWidth;
+
+      cardBox.classList.add(
+        "card-reveal"
+      );
+
+
+      /*
+        約 2/3 問答，
+        約 1/3 普通事件
+      */
+
+      if (
+        Math.random() < 0.67
+      ) {
+
+        drawQuizCard();
+
+      }
+
+      else {
+
+        drawEventCard();
+
+      }
+
+    },
+    1300
+  );
 
 }
 
 
-/* =========================================================
-   事件卡
-========================================================= */
+/* ==================================================
+   普通事件
+================================================== */
 
 function drawEventCard() {
 
+  document
+    .getElementById("cardDrawVisual")
+    .classList.remove("show");
+
+
   const card =
     eventCards[
-      Math.floor(Math.random() * eventCards.length)
+      Math.floor(
+        Math.random() *
+        eventCards.length
+      )
     ];
 
-  const player = players[currentPlayerIndex];
 
-  document.getElementById("cardTitle").textContent =
+  const player =
+    players[currentPlayerIndex];
+
+
+  document.getElementById(
+    "cardTitle"
+  ).textContent =
     "🎴 事件卡";
 
-  document.getElementById("cardText").textContent =
+
+  document.getElementById(
+    "cardText"
+  ).textContent =
     card.text;
 
-  document.getElementById("quizOptions").innerHTML = "";
 
-  document.getElementById("closeCard").style.display =
+  document.getElementById(
+    "quizOptions"
+  ).innerHTML = "";
+
+
+  document.getElementById(
+    "closeCard"
+  ).style.display =
     "inline-block";
 
-  document.getElementById("cardOverlay").style.display =
+
+  document.getElementById(
+    "cardOverlay"
+  ).style.display =
     "flex";
 
 
-  setTimeout(() => {
+  setTimeout(
+    () => {
 
-    if (card.effect === "move") {
+      if (
+        card.effect === "move"
+      ) {
 
-      player.position =
-        (player.position + card.value) % 24;
+        player.position =
+          (
+            player.position +
+            card.value
+          ) % 24;
 
-      updateBoard();
+        updateBoard();
 
-    }
+      }
 
-    else if (card.effect === "back") {
+      else if (
+        card.effect === "back"
+      ) {
 
-      player.position =
-        (player.position - card.value + 24) % 24;
+        player.position =
+          (
+            player.position -
+            card.value +
+            24
+          ) % 24;
 
-      updateBoard();
+        updateBoard();
 
-    }
+      }
 
-    else if (card.effect === "rest") {
+      else if (
+        card.effect === "rest"
+      ) {
 
-      player.rest = true;
+        player.rest = true;
 
-    }
+      }
 
-  }, 500);
+    },
+    400
+  );
 
 
-  if (player.type === "bot") {
+  if (
+    player.type === "bot"
+  ) {
 
-    setTimeout(() => {
-
-      closeCard();
-
-    }, 1300);
+    setTimeout(
+      closeCard,
+      1300
+    );
 
   }
 
 }
 
 
-/* =========================================================
-   問答卡
-========================================================= */
+/* ==================================================
+   問答
+================================================== */
 
 function drawQuizCard() {
 
+  document
+    .getElementById("cardDrawVisual")
+    .classList.remove("show");
+
+
   currentQuiz =
     quizCards[
-      Math.floor(Math.random() * quizCards.length)
+      Math.floor(
+        Math.random() *
+        quizCards.length
+      )
     ];
 
-  const player = players[currentPlayerIndex];
 
-  document.getElementById("cardTitle").textContent =
-    `${badgeTypes[currentQuiz.type].icon} ${badgeTypes[currentQuiz.type].name}`;
+  const player =
+    players[currentPlayerIndex];
 
-  document.getElementById("cardText").textContent =
+
+  document.getElementById(
+    "cardTitle"
+  ).textContent =
+
+    `${badgeTypes[currentQuiz.type].icon}
+     ${badgeTypes[currentQuiz.type].name}`;
+
+
+  document.getElementById(
+    "cardText"
+  ).textContent =
     currentQuiz.question;
 
+
   const optionsContainer =
-    document.getElementById("quizOptions");
+    document.getElementById(
+      "quizOptions"
+    );
 
   optionsContainer.innerHTML = "";
 
-  currentQuiz.options.forEach((option, index) => {
 
-    const button = document.createElement("button");
+  currentQuiz.options.forEach(
+    (option, index) => {
 
-    button.className = "quiz-option";
+      const button =
+        document.createElement("button");
 
-    button.textContent =
-      `${String.fromCharCode(65 + index)}. ${option}`;
+      button.className =
+        "quiz-option";
 
-    button.addEventListener("click", () => {
-
-      checkAnswer(index);
-
-    });
-
-    optionsContainer.appendChild(button);
-
-  });
+      button.textContent =
+        `${String.fromCharCode(65 + index)}. ${option}`;
 
 
-  document.getElementById("closeCard").style.display =
+      button.addEventListener(
+        "click",
+        () => {
+
+          checkAnswer(index);
+
+        }
+      );
+
+
+      optionsContainer.appendChild(
+        button
+      );
+
+    }
+  );
+
+
+  document.getElementById(
+    "closeCard"
+  ).style.display =
     "none";
 
-  document.getElementById("cardOverlay").style.display =
+
+  document.getElementById(
+    "cardOverlay"
+  ).style.display =
     "flex";
 
 
-  /* BOT 自動答題 */
+  /*
+    BOT 自動答題
+  */
 
-  if (player.type === "bot") {
+  if (
+    player.type === "bot"
+  ) {
 
-    setTimeout(() => {
-
-      botAnswer();
-
-    }, 1000);
+    setTimeout(
+      botAnswer,
+      1000
+    );
 
   }
 
 }
 
 
-/* =========================================================
+/* ==================================================
    BOT 答題
-   75% 正確、25% 錯誤
-========================================================= */
+   75% 正確
+   25% 錯誤
+================================================== */
 
 function botAnswer() {
 
-  if (!currentQuiz || gameOver) return;
+  if (
+    !currentQuiz ||
+    gameOver
+  ) return;
+
 
   let answer;
 
-  /* 75% 答對 */
 
-  if (Math.random() < 0.75) {
+  /*
+    75% 答對
+  */
 
-    answer = currentQuiz.answer;
+  if (
+    Math.random() < 0.75
+  ) {
+
+    answer =
+      currentQuiz.answer;
 
   }
 
-  /* 25% 故意答錯 */
+
+  /*
+    25% 答錯
+  */
 
   else {
 
-    const wrongAnswers = [0, 1, 2, 3]
-      .filter(index => index !== currentQuiz.answer);
+    const wrongAnswers =
+      [0,1,2,3].filter(
+        index =>
+          index !== currentQuiz.answer
+      );
+
 
     answer =
       wrongAnswers[
-        Math.floor(Math.random() * wrongAnswers.length)
+        Math.floor(
+          Math.random() *
+          wrongAnswers.length
+        )
       ];
 
   }
+
 
   checkAnswer(answer);
 
 }
 
 
-/* =========================================================
-   答題判定
-========================================================= */
+/* ==================================================
+   答案判定
+================================================== */
 
 function checkAnswer(answer) {
 
-  if (!currentQuiz || gameOver) return;
+  if (
+    !currentQuiz ||
+    gameOver ||
+    cardClosing
+  ) return;
 
-  const player = players[currentPlayerIndex];
+
+  const player =
+    players[currentPlayerIndex];
+
 
   const correct =
     answer === currentQuiz.answer;
 
 
-  /* 鎖住選項 */
-
   document
     .querySelectorAll(".quiz-option")
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.disabled = true;
+        button.disabled = true;
 
-    });
+      }
+    );
 
 
   if (correct) {
 
-    player.badges[currentQuiz.type]++;
+    player.badges[
+      currentQuiz.type
+    ]++;
 
-    document.getElementById("cardText").textContent =
-      `✅ 答對了！獲得 ${badgeTypes[currentQuiz.type].icon} ${badgeTypes[currentQuiz.type].name} 徽章 1 枚！`;
+
+    document.getElementById(
+      "cardText"
+    ).textContent =
+
+      `✅ 正確！
+       獲得 ${badgeTypes[currentQuiz.type].icon}
+       ${badgeTypes[currentQuiz.type].name}
+       徽章 1 枚！`;
 
   }
 
   else {
 
-    document.getElementById("cardText").textContent =
-      `❌ 答錯了！正確答案是：${currentQuiz.options[currentQuiz.answer]}`;
+    document.getElementById(
+      "cardText"
+    ).textContent =
+
+      `❌ 錯誤！
+       正確答案是：
+       ${currentQuiz.options[currentQuiz.answer]}`;
 
   }
-
-
-  document.getElementById("closeCard").style.display =
-    "inline-block";
 
 
   updatePlayerInfo();
 
 
-  if (checkWin(player)) {
+  /*
+    答完後自動關閉
+  */
 
-    setTimeout(() => {
+  cardClosing = true;
+
+
+  setTimeout(
+    () => {
+
+      cardClosing = false;
 
       closeCard();
 
-      showWin(player);
+    },
+    1200
+  );
 
-    }, 900);
+}
+
+
+/* ==================================================
+   關閉卡片
+================================================== */
+
+document
+  .getElementById("closeCard")
+  .addEventListener(
+    "click",
+    () => {
+
+      closeCard();
+
+    }
+  );
+
+
+function closeCard() {
+
+  document
+    .getElementById("cardDrawVisual")
+    .classList.remove("show");
+
+  document
+    .querySelector("#cardOverlay .card-box")
+    .classList.remove("card-reveal");
+
+
+  document.getElementById(
+    "cardOverlay"
+  ).style.display =
+    "none";
+
+
+  currentQuiz = null;
+
+
+  /*
+    檢查勝利
+  */
+
+  const player =
+    players[currentPlayerIndex];
+
+
+  if (
+    checkWin(player)
+  ) {
+
+    showWin(player);
 
     return;
 
   }
 
 
-  /* BOT 自動關閉 */
-
-  if (player.type === "bot") {
-
-    setTimeout(() => {
-
-      closeCard();
-
-    }, 1200);
-
-  }
-
-}
-
-
-/* =========================================================
-   關閉卡片
-========================================================= */
-
-document.getElementById("closeCard").addEventListener(
-  "click",
-  closeCard
-);
-
-
-function closeCard() {
-
-  document.getElementById("cardOverlay").style.display =
-    "none";
-
-  currentQuiz = null;
-
   if (!gameOver) {
 
-    setTimeout(nextTurn, 300);
+    setTimeout(
+      nextTurn,
+      300
+    );
 
   }
 
 }
 
 
-/* =========================================================
+/* ==================================================
    勝利條件
-========================================================= */
+================================================== */
 
 function checkWin(player) {
 
-  /* 四種徽章各至少 1 */
+  /*
+    四種各至少 1 枚
+  */
 
   const allTypes =
-    player.badges.every(count => count >= 1);
+    player.badges.every(
+      count => count >= 1
+    );
 
 
-  /* 任一類別達到 4 */
+  /*
+    任一種類達到 4 枚
+  */
 
   const oneType =
-    player.badges.some(count => count >= 4);
+    player.badges.some(
+      count => count >= 4
+    );
 
 
-  return allTypes || oneType;
+  return (
+    allTypes ||
+    oneType
+  );
 
 }
 
 
-/* =========================================================
+/* ==================================================
    勝利畫面
-========================================================= */
+================================================== */
 
 function showWin(player) {
 
   gameOver = true;
 
-  document.getElementById("winnerText").innerHTML =
-    `<h3>${player.icon} ${player.name} 獲勝！</h3>
-     <p>恭喜完成視力保健挑戰！</p>`;
+  moving = false;
+
+  diceButton.disabled = true;
+
+
+  document.getElementById(
+    "winnerText"
+  ).innerHTML = `
+
+    <h3>
+      ${player.icon}
+      ${player.name}
+      獲勝！
+    </h3>
+
+    <p>
+      🎉 恭喜完成視力保健挑戰！
+    </p>
+
+  `;
+
 
   let badgeText = "<p>";
 
-  badgeTypes.forEach((badge, index) => {
 
-    badgeText +=
-      `${badge.icon} ${badge.name}：${player.badges[index]} 枚<br>`;
+  badgeTypes.forEach(
+    (badge, index) => {
 
-  });
+      badgeText +=
+        `${badge.icon}
+         ${badge.name}：
+         ${player.badges[index]}
+         枚<br>`;
+
+    }
+  );
+
 
   badgeText += "</p>";
 
-  document.getElementById("winnerBadges").innerHTML =
+
+  document.getElementById(
+    "winnerBadges"
+  ).innerHTML =
     badgeText;
 
-  document.getElementById("winOverlay").style.display =
+
+  document.getElementById(
+    "winOverlay"
+  ).style.display =
     "flex";
 
 }
 
 
-/* =========================================================
+/* ==================================================
    下一回合
-========================================================= */
+================================================== */
 
 function nextTurn() {
 
   if (gameOver) return;
 
+
   currentPlayerIndex =
-    (currentPlayerIndex + 1) % players.length;
+    (
+      currentPlayerIndex + 1
+    ) % players.length;
+
 
   updateTurn();
 
-  document.getElementById("diceResult").textContent =
-    "";
+
+  diceNumber.textContent =
+    "點一下骰子";
 
 
-  setTimeout(checkBotTurn, 500);
+  setTimeout(
+    checkBotTurn,
+    500
+  );
 
 }
 
 
-/* =========================================================
+/* ==================================================
    BOT 回合
-========================================================= */
+================================================== */
 
 function checkBotTurn() {
 
   if (gameOver) return;
 
-  const player = players[currentPlayerIndex];
 
-  if (player.type !== "bot") {
+  const player =
+    players[currentPlayerIndex];
 
-    document.getElementById("rollDice").disabled =
-      false;
+
+  if (
+    player.type !== "bot"
+  ) {
+
+    diceButton.disabled = false;
 
     return;
 
   }
 
 
-  document.getElementById("rollDice").disabled =
-    true;
+  diceButton.disabled = true;
 
 
-  /* BOT 需要休息 */
+  /*
+    BOT 休息
+  */
 
   if (player.rest) {
 
     player.rest = false;
 
-    document.getElementById("diceResult").textContent =
-      "😴 機器人本回合休息。";
+    diceNumber.textContent =
+      "😴 機器人本回合休息";
 
-    setTimeout(nextTurn, 1000);
+    setTimeout(
+      nextTurn,
+      1000
+    );
 
     return;
 
   }
 
 
-  /* BOT 1 秒後自動擲骰 */
+  /*
+    BOT 自動骰
+  */
 
-  setTimeout(() => {
+  setTimeout(
+    () => {
 
-    if (!gameOver) {
+      if (!gameOver) {
 
-      performRoll();
+        rollBotDice();
 
-    }
+      }
 
-  }, 1000);
+    },
+    900
+  );
 
 }
 
 
-/* =========================================================
+/* ==================================================
+   BOT 擲骰
+================================================== */
+
+function rollBotDice() {
+
+  if (
+    gameOver ||
+    moving
+  ) return;
+
+
+  moving = true;
+
+
+  diceCube.classList.remove(
+    "dice-rolling"
+  );
+
+  void diceCube.offsetWidth;
+
+  diceCube.classList.add(
+    "dice-rolling"
+  );
+
+
+  const dice =
+    Math.floor(
+      Math.random() * 6
+    ) + 1;
+
+
+  setTimeout(
+    () => {
+
+      diceNumber.textContent =
+        `🎲 擲出：${dice}`;
+
+      /*
+        讓玩家先看清楚骰子結果
+      */
+
+      setTimeout(
+        () => {
+
+          const player =
+            players[currentPlayerIndex];
+
+          movePlayer(
+            player,
+            dice
+          );
+
+        },
+        800
+      );
+
+    },
+    900
+  );
+
+}
+
+
+/* ==================================================
    重新開始
-========================================================= */
+================================================== */
 
-document.getElementById("restartGame").addEventListener(
-  "click",
-  () => {
+document
+  .getElementById("restartGame")
+  .addEventListener(
+    "click",
+    () => {
 
-    location.reload();
+      location.reload();
 
-  }
-);
+    }
+  );
 
 </script>
 
