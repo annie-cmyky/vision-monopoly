@@ -2886,6 +2886,157 @@ document
   );
 
 </script>
+<!-- ==================== 🧪 測試資訊面板 ==================== -->
+<div id="testPanel">
+  <div class="test-title">🧪 測試資訊</div>
 
+  <div>⏱️ 遊玩時間：<span id="testTime">00:00:00</span></div>
+
+  <div>
+    🎴 牌堆剩餘：
+    <span id="testPile">60</span> / 60
+  </div>
+
+  <div>
+    🃏 已抽卡片：
+    <span id="testCards">尚未抽牌</span>
+  </div>
+</div>
+
+<style>
+  #testPanel {
+    position: fixed;
+    right: 15px;
+    bottom: 15px;
+    z-index: 9999;
+
+    width: 260px;
+    padding: 14px 16px;
+
+    background: rgba(20, 20, 30, 0.92);
+    color: white;
+    border-radius: 12px;
+
+    font-size: 14px;
+    line-height: 1.8;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+
+  #testPanel .test-title {
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  #testCards {
+    word-break: break-word;
+  }
+</style>
+
+<script>
+/* ==================== 🧪 測試資訊 ==================== */
+
+let testStartTime = Date.now();
+let testDrawnCards = [];
+
+
+/* ---------- 遊玩時間 ---------- */
+
+function updateTestTime() {
+  const elapsed = Math.floor((Date.now() - testStartTime) / 1000);
+
+  const hours = Math.floor(elapsed / 3600);
+  const minutes = Math.floor((elapsed % 3600) / 60);
+  const seconds = elapsed % 60;
+
+  document.getElementById("testTime").textContent =
+    String(hours).padStart(2, "0") + ":" +
+    String(minutes).padStart(2, "0") + ":" +
+    String(seconds).padStart(2, "0");
+}
+
+setInterval(updateTestTime, 1000);
+
+
+/* ---------- 牌堆數量 ---------- */
+
+function updateTestPile() {
+  const pileElement = document.getElementById("testPile");
+
+  if (typeof drawPile !== "undefined") {
+    pileElement.textContent = drawPile.length;
+  }
+}
+
+
+/* ---------- 抽卡紀錄 ---------- */
+
+function updateTestCards() {
+  const cardElement = document.getElementById("testCards");
+
+  if (testDrawnCards.length === 0) {
+    cardElement.textContent = "尚未抽牌";
+    return;
+  }
+
+  cardElement.textContent =
+    testDrawnCards.map(id => "#" + id).join("、");
+}
+
+
+/* ---------- 攔截原本的 drawCard ---------- */
+/*
+   不修改你原本的 drawCard，
+   而是在外面包一層，讓測試面板自動記錄。
+*/
+
+if (typeof drawCard === "function") {
+
+  const originalDrawCard = drawCard;
+
+  drawCard = function() {
+
+    // 抽卡前先記住牌堆
+    const beforeIds =
+      typeof drawPile !== "undefined"
+        ? drawPile.map(card => card.id)
+        : [];
+
+    // 執行原本的抽卡
+    originalDrawCard();
+
+    // 抽卡後取得牌堆
+    const afterIds =
+      typeof drawPile !== "undefined"
+        ? drawPile.map(card => card.id)
+        : [];
+
+    // 找出消失的那張卡
+    const drawnId = beforeIds.find(id => !afterIds.includes(id));
+
+    if (drawnId !== undefined) {
+      testDrawnCards.push(drawnId);
+    }
+
+    updateTestPile();
+    updateTestCards();
+  };
+
+}
+
+
+/* ---------- 定期更新牌堆數量 ---------- */
+
+setInterval(updateTestPile, 300);
+
+
+/* ---------- 初始更新 ---------- */
+
+updateTestTime();
+updateTestPile();
+updateTestCards();
+
+</script>
 </body>
 </html>
