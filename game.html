@@ -2886,152 +2886,390 @@ document
   );
 
 </script>
-<!-- ==================== 🧪 測試資訊面板 ==================== -->
+<!-- ==================== 🧪 測試資訊 ==================== -->
+
 <div id="testPanel">
   <div class="test-title">🧪 測試資訊</div>
 
-  <div>⏱️ 遊玩時間：<span id="testTime">00:00:00</span></div>
+  <div class="test-row">
+    ⏱️ 遊玩時間：
+    <span id="testTime">00:00:00</span>
+  </div>
 
-  <div>
+  <div class="test-row">
     🎴 牌堆剩餘：
     <span id="testPile">60</span> / 60
   </div>
 
-  <div>
+  <div class="test-row test-card-row">
     🃏 已抽卡片：
-    <span id="testCards">尚未抽牌</span>
+    <div id="testCards">尚未抽牌</div>
   </div>
 </div>
+
 
 <style>
   #testPanel {
     position: fixed;
     right: 15px;
     bottom: 15px;
-    z-index: 9999;
 
-    width: 260px;
+    width: 270px;
     padding: 14px 16px;
 
-    background: rgba(20, 20, 30, 0.92);
+    z-index: 99999;
+
+    background: rgba(25, 25, 35, 0.94);
     color: white;
+
     border-radius: 12px;
 
     font-size: 14px;
     line-height: 1.8;
 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+
+    pointer-events: none;
   }
 
   #testPanel .test-title {
     font-size: 17px;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
+  }
+
+  #testPanel .test-row {
+    margin-bottom: 4px;
   }
 
   #testCards {
+    margin-top: 3px;
+
+    max-height: 130px;
+    overflow-y: auto;
+
     word-break: break-word;
   }
 </style>
 
+
 <script>
-/* ==================== 🧪 測試資訊 ==================== */
+/* =====================================================
+   🧪 測試資訊
+   ===================================================== */
 
-let testStartTime = Date.now();
-let testDrawnCards = [];
+
+/* =====================================================
+   ① 遊玩時間
+   ===================================================== */
+
+let testStartTime = null;
+let testEndTime = null;
+let testTimer = null;
 
 
-/* ---------- 遊玩時間 ---------- */
+/* 開始計時 */
+function startTestTimer() {
 
-function updateTestTime() {
-  const elapsed = Math.floor((Date.now() - testStartTime) / 1000);
+  // 已經開始過就不重新開始
+  if (testStartTime !== null) return;
 
-  const hours = Math.floor(elapsed / 3600);
-  const minutes = Math.floor((elapsed % 3600) / 60);
-  const seconds = elapsed % 60;
+  testStartTime = Date.now();
 
-  document.getElementById("testTime").textContent =
-    String(hours).padStart(2, "0") + ":" +
-    String(minutes).padStart(2, "0") + ":" +
-    String(seconds).padStart(2, "0");
+  updateTestTime();
+
+  testTimer = setInterval(function () {
+
+    // 遊戲結束
+    if (
+      typeof gameOver !== "undefined" &&
+      gameOver === true
+    ) {
+      stopTestTimer();
+      return;
+    }
+
+    updateTestTime();
+
+  }, 1000);
 }
 
-setInterval(updateTestTime, 1000);
 
+/* 停止計時 */
+function stopTestTimer() {
 
-/* ---------- 牌堆數量 ---------- */
+  if (testTimer !== null) {
 
-function updateTestPile() {
-  const pileElement = document.getElementById("testPile");
+    clearInterval(testTimer);
 
-  if (typeof drawPile !== "undefined") {
-    pileElement.textContent = drawPile.length;
+    testTimer = null;
   }
+
+  if (testEndTime === null) {
+
+    testEndTime = Date.now();
+
+  }
+
+  updateTestTime();
 }
 
 
-/* ---------- 抽卡紀錄 ---------- */
+/* 更新時間 */
+function updateTestTime() {
 
-function updateTestCards() {
-  const cardElement = document.getElementById("testCards");
+  const timeElement =
+    document.getElementById("testTime");
 
-  if (testDrawnCards.length === 0) {
-    cardElement.textContent = "尚未抽牌";
+  if (!timeElement) return;
+
+
+  // 尚未開始遊戲
+  if (testStartTime === null) {
+
+    timeElement.textContent =
+      "00:00:00";
+
     return;
   }
 
-  cardElement.textContent =
-    testDrawnCards.map(id => "#" + id).join("、");
+
+  const endTime =
+    testEndTime !== null
+      ? testEndTime
+      : Date.now();
+
+
+  const elapsed =
+    Math.floor(
+      (endTime - testStartTime) / 1000
+    );
+
+
+  const hours =
+    Math.floor(elapsed / 3600);
+
+
+  const minutes =
+    Math.floor(
+      (elapsed % 3600) / 60
+    );
+
+
+  const seconds =
+    elapsed % 60;
+
+
+  timeElement.textContent =
+    String(hours).padStart(2, "0") +
+    ":" +
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0");
 }
 
 
-/* ---------- 攔截原本的 drawCard ---------- */
+/* =====================================================
+   ② 偵測「開始遊戲」
+   ===================================================== */
+
+document.addEventListener("click", function (event) {
+
+  const button =
+    event.target.closest("button");
+
+  if (!button) return;
+
+
+  const text =
+    button.textContent.trim();
+
+
+  if (
+    text.includes("開始遊戲") ||
+    text.includes("開始遊玩")
+  ) {
+
+    startTestTimer();
+
+  }
+
+});
+
+
+/* =====================================================
+   ③ 監測遊戲結束
+   ===================================================== */
+
+setInterval(function () {
+
+  if (
+    testStartTime !== null &&
+    testEndTime === null &&
+    typeof gameOver !== "undefined" &&
+    gameOver === true
+  ) {
+
+    stopTestTimer();
+
+  }
+
+}, 200);
+
+
+/* =====================================================
+   ④ 牌堆剩餘數量
+   ===================================================== */
+
+function updateTestPile() {
+
+  const pileElement =
+    document.getElementById("testPile");
+
+  if (!pileElement) return;
+
+
+  if (
+    typeof drawPile !== "undefined" &&
+    Array.isArray(drawPile)
+  ) {
+
+    pileElement.textContent =
+      drawPile.length;
+
+  }
+}
+
+
+setInterval(function () {
+
+  updateTestPile();
+
+}, 300);
+
+
+/* =====================================================
+   ⑤ 抽卡紀錄
+   ===================================================== */
+
+let testDrawnCards = [];
+
+
 /*
-   不修改你原本的 drawCard，
-   而是在外面包一層，讓測試面板自動記錄。
+   找出目前牌堆和上一刻牌堆的差異。
+   如果少了一張卡，就代表抽出了一張卡。
 */
 
-if (typeof drawCard === "function") {
+let testPreviousPileIds = null;
 
-  const originalDrawCard = drawCard;
 
-  drawCard = function() {
+function checkTestDraw() {
 
-    // 抽卡前先記住牌堆
-    const beforeIds =
-      typeof drawPile !== "undefined"
-        ? drawPile.map(card => card.id)
-        : [];
+  if (
+    typeof drawPile === "undefined" ||
+    !Array.isArray(drawPile)
+  ) {
+    return;
+  }
 
-    // 執行原本的抽卡
-    originalDrawCard();
 
-    // 抽卡後取得牌堆
-    const afterIds =
-      typeof drawPile !== "undefined"
-        ? drawPile.map(card => card.id)
-        : [];
+  const currentIds =
+    drawPile.map(function (card) {
 
-    // 找出消失的那張卡
-    const drawnId = beforeIds.find(id => !afterIds.includes(id));
+      return card.id;
 
-    if (drawnId !== undefined) {
-      testDrawnCards.push(drawnId);
-    }
+    });
 
-    updateTestPile();
+
+  // 第一次取得牌堆
+  if (testPreviousPileIds === null) {
+
+    testPreviousPileIds =
+      currentIds.slice();
+
+    return;
+  }
+
+
+  /*
+     找出上一刻有、現在沒有的卡片
+  */
+
+  const removedIds =
+    testPreviousPileIds.filter(function (id) {
+
+      return !currentIds.includes(id);
+
+    });
+
+
+  /*
+     如果剛好少一張
+     → 就是抽到的卡片
+  */
+
+  if (removedIds.length === 1) {
+
+    testDrawnCards.push(
+      removedIds[0]
+    );
+
     updateTestCards();
-  };
 
+  }
+
+
+  /*
+     如果牌堆突然重新補滿
+     代表 60 張抽完後重新洗牌。
+     這時不把它當成抽卡。
+  */
+
+  testPreviousPileIds =
+    currentIds.slice();
 }
 
 
-/* ---------- 定期更新牌堆數量 ---------- */
+/* 更新抽卡顯示 */
+function updateTestCards() {
 
-setInterval(updateTestPile, 300);
+  const cardElement =
+    document.getElementById("testCards");
+
+  if (!cardElement) return;
 
 
-/* ---------- 初始更新 ---------- */
+  if (testDrawnCards.length === 0) {
+
+    cardElement.textContent =
+      "尚未抽牌";
+
+    return;
+  }
+
+
+  cardElement.textContent =
+    testDrawnCards
+      .map(function (id) {
+
+        return "#" + id;
+
+      })
+      .join("、");
+}
+
+
+/* 每 100 毫秒檢查一次 */
+setInterval(function () {
+
+  checkTestDraw();
+
+}, 100);
+
+
+/* =====================================================
+   ⑥ 初始狀態
+   ===================================================== */
 
 updateTestTime();
 updateTestPile();
