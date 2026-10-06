@@ -293,10 +293,64 @@ h1 {
   justify-content: center;
   align-items: center;
 
-  font-size: 45px;
+  box-shadow:
+    inset 0 2px 3px rgba(255,255,255,0.9),
+    0 3px 8px rgba(0,0,0,0.18);
 
-  box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: 10px;
+  box-sizing: border-box;
 }
+
+.pip {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #4f5f82;
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.25),
+    0 1px 1px rgba(255,255,255,0.7);
+  align-self: center;
+  justify-self: center;
+}
+
+.p1 { grid-area: 1 / 1; }
+.p2 { grid-area: 1 / 3; }
+.p3 { grid-area: 2 / 2; }
+.p4 { grid-area: 3 / 1; }
+.p5 { grid-area: 3 / 3; }
+.p6 { grid-area: 2 / 1; }
+
+.dice-front .p1 {
+  grid-area: 2 / 2;
+}
+
+.dice-right .p1 { grid-area: 1 / 1; }
+.dice-right .p2 { grid-area: 3 / 3; }
+
+.dice-left .p1 { grid-area: 1 / 1; }
+.dice-left .p2 { grid-area: 1 / 3; }
+.dice-left .p3 { grid-area: 3 / 1; }
+.dice-left .p4 { grid-area: 3 / 3; }
+.dice-left .p5 { grid-area: 2 / 2; }
+
+.dice-top .p1 { grid-area: 1 / 1; }
+.dice-top .p2 { grid-area: 2 / 2; }
+.dice-top .p3 { grid-area: 3 / 3; }
+
+.dice-bottom .p1 { grid-area: 1 / 1; }
+.dice-bottom .p2 { grid-area: 1 / 3; }
+.dice-bottom .p3 { grid-area: 3 / 1; }
+.dice-bottom .p4 { grid-area: 3 / 3; }
+
+.dice-back .p1 { grid-area: 1 / 1; }
+.dice-back .p2 { grid-area: 2 / 1; }
+.dice-back .p3 { grid-area: 3 / 1; }
+.dice-back .p4 { grid-area: 1 / 3; }
+.dice-back .p5 { grid-area: 2 / 3; }
+.dice-back .p6 { grid-area: 3 / 3; }
 
 .dice-front {
   transform: translateZ(35px);
@@ -482,6 +536,19 @@ h1 {
   font-size: 18px;
   line-height: 1.6;
   margin: 20px 0;
+}
+
+
+#eventReminder {
+  display: none;
+  margin: -8px 0 20px;
+  padding: 10px 12px;
+  background: #fff8df;
+  border-radius: 10px;
+  color: #7a6330;
+  font-size: 15px;
+  line-height: 1.6;
+  text-align: left;
 }
 
 .quiz-option {
@@ -700,10 +767,10 @@ h1 {
     <h3>🏅 徽章</h3>
 
     <ul>
-      <li>👁️ 視力保健</li>
-      <li>📱 3C 使用</li>
-      <li>📖 閱讀習慣</li>
-      <li>🌳 戶外生活</li>
+      <li>👁️ 日常護眼</li>
+      <li>📱 3C</li>
+      <li>📖 閱讀</li>
+      <li>🌳 戶外</li>
     </ul>
 
     <h3>🏆 獲勝條件</h3>
@@ -758,27 +825,42 @@ h1 {
               <div id="diceCube" class="dice-cube">
 
                 <div class="dice-face dice-front">
-                  ⚀
+                  <span class="pip p1"></span>
                 </div>
 
                 <div class="dice-face dice-back">
-                  ⚁
+                  <span class="pip p1"></span>
+                  <span class="pip p2"></span>
+                  <span class="pip p3"></span>
+                  <span class="pip p4"></span>
+                  <span class="pip p5"></span>
+                  <span class="pip p6"></span>
                 </div>
 
                 <div class="dice-face dice-right">
-                  ⚂
+                  <span class="pip p1"></span>
+                  <span class="pip p2"></span>
                 </div>
 
                 <div class="dice-face dice-left">
-                  ⚃
+                  <span class="pip p1"></span>
+                  <span class="pip p2"></span>
+                  <span class="pip p3"></span>
+                  <span class="pip p4"></span>
+                  <span class="pip p5"></span>
                 </div>
 
                 <div class="dice-face dice-top">
-                  ⚄
+                  <span class="pip p1"></span>
+                  <span class="pip p2"></span>
+                  <span class="pip p3"></span>
                 </div>
 
                 <div class="dice-face dice-bottom">
-                  ⚅
+                  <span class="pip p1"></span>
+                  <span class="pip p2"></span>
+                  <span class="pip p3"></span>
+                  <span class="pip p4"></span>
                 </div>
 
               </div>
@@ -844,6 +926,8 @@ h1 {
 
     <div id="cardText"></div>
 
+    <div id="eventReminder"></div>
+
     <div id="quizOptions"></div>
 
     <button id="closeCard">
@@ -886,22 +970,22 @@ const playerIcons = [
 const badgeTypes = [
 
   {
-    name: "視力保健",
+    name: "日常護眼",
     icon: "👁️"
   },
 
   {
-    name: "3C使用",
+    name: "3C",
     icon: "📱"
   },
 
   {
-    name: "閱讀習慣",
+    name: "閱讀",
     icon: "📖"
   },
 
   {
-    name: "戶外生活",
+    name: "戶外",
     icon: "🌳"
   }
 
@@ -1397,14 +1481,14 @@ const diceCube =
 const diceNumber =
   document.getElementById("diceNumber");
 
-const diceSymbols = [
-  "⚀",
-  "⚁",
-  "⚂",
-  "⚃",
-  "⚄",
-  "⚅"
-];
+const diceTransforms = {
+  1: "rotateX(0deg) rotateY(0deg) rotateZ(0deg)",
+  2: "rotateX(0deg) rotateY(-90deg) rotateZ(0deg)",
+  3: "rotateX(-90deg) rotateY(0deg) rotateZ(0deg)",
+  4: "rotateX(90deg) rotateY(0deg) rotateZ(0deg)",
+  5: "rotateX(0deg) rotateY(90deg) rotateZ(0deg)",
+  6: "rotateX(0deg) rotateY(180deg) rotateZ(0deg)"
+};
 
 diceButton.addEventListener(
   "click",
@@ -1469,6 +1553,11 @@ function rollDice() {
 
   setTimeout(
     () => {
+
+      // 動畫結束後移除動畫 class，再固定到實際擲出的點數
+      diceCube.classList.remove("dice-rolling");
+      diceCube.style.transform =
+        diceTransforms[dice];
 
       diceNumber.textContent =
         `🎲 擲出：${dice}`;
@@ -1545,123 +1634,143 @@ function movePlayer(
 const eventCards = [
 
   {
-    text: "你今天有乖乖讓眼睛休息，前進 2 格！",
+    text: "看書時保持適當距離。前進 2 格。",
     effect: "move",
-    value: 2
+    value: 2,
+    reminder: "🌟 閱讀時應保持約 35～45 公分的距離。"
   },
 
   {
-    text: "長時間盯著手機，眼睛需要休息。後退 2 格。",
+    text: "記得定期眨眼，保持眼睛濕潤。前進 1 格。",
+    effect: "move",
+    value: 1,
+    reminder: "🌟 正常眨眼有助於淚液均勻分布，保持眼睛濕潤。"
+  },
+
+  {
+    text: "寫作業時保持正確姿勢。前進 1 格。",
+    effect: "move",
+    value: 1,
+    reminder: "🌟 保持適當的閱讀距離，避免長時間近距離用眼，減少眼睛負擔。"
+  },
+
+  {
+    text: "看電視時距離太近了。後退 1 格。",
     effect: "back",
-    value: 2
+    value: 1,
+    reminder: "🌟 看電視應保持適當距離，避免靠得太近。"
   },
 
   {
-    text: "你做了護眼操！前進 3 格。",
-    effect: "move",
-    value: 3
-  },
-
-  {
-    text: "熬夜追劇，精神不佳。後退 3 格。",
+    text: "趴著看書。後退 1 格。",
     effect: "back",
-    value: 3
+    value: 1,
+    reminder: "🌟 看書時應坐姿端正，避免趴著或躺著閱讀。"
   },
 
   {
-    text: "你今天有安排戶外活動！前進 2 格。",
-    effect: "move",
-    value: 2
-  },
-
-  {
-    text: "看書時距離太近，眼睛需要休息。後退 1 格。",
+    text: "玩手機玩太久，忘記休息。後退 3 格。",
     effect: "back",
-    value: 1
+    value: 3,
+    reminder: "🌟 使用 3C 產品應適時休息，讓眼睛放鬆。"
   },
 
   {
-    text: "你記得眨眨眼，讓眼睛休息一下。前進 1 格。",
-    effect: "move",
-    value: 1
+    text: "在光線不足的地方看書。後退 1 格。",
+    effect: "back",
+    value: 1,
+    reminder: "🌟 閱讀時應保持充足且均勻的光線。"
   },
 
   {
-    text: "連續使用 3C 太久，請休息一下。",
+    text: "今天的作業好多，眼睛需要休息。原地休息一回合。",
     effect: "rest",
-    value: 0
+    value: 0,
+    reminder: "🌟 長時間近距離用眼後，應適時休息，避免眼睛過度疲勞。"
   },
 
   {
-    text: "你到戶外活動了一會兒，前進 2 格！",
-    effect: "move",
-    value: 2
-  },
-
-  {
-    text: "睡眠不足，今天的眼睛很疲累。後退 2 格。",
+    text: "躺著滑手機，眼睛疲勞了。後退 2 格！",
     effect: "back",
-    value: 2
+    value: 2,
+    reminder: "🌟 使用手機時應保持良好姿勢，避免躺著使用。"
   },
 
   {
-    text: "你主動把螢幕拿遠了一點，前進 1 格。",
+    text: "今天有正確使用 20-20-20 法則，讓眼睛適時休息。前進 2 格。",
     effect: "move",
-    value: 1
+    value: 2,
+    reminder: "🌟 20-20-20法則：每使用眼睛近距離工作 20 分鐘，就看向 20 英尺（約 6 公尺）外的地方至少 20 秒。"
   },
 
   {
-    text: "在昏暗的地方看書，眼睛太辛苦了。後退 2 格。",
-    effect: "back",
-    value: 2
-  },
-
-  {
-    text: "你今天有充分休息，前進 2 格。",
+    text: "今天安排了戶外活動。前進 1 格。",
     effect: "move",
-    value: 2
+    value: 1,
+    reminder: "🌟 每天安排適當戶外活動，有助於近視防控。"
   },
 
   {
-    text: "休息時間到了，下一回合暫停一次。",
+    text: "定期接受檢查，及早發現問題。前進 2 格。",
+    effect: "move",
+    value: 2,
+    reminder: "🌟 建議定期接受專業視力檢查。"
+  },
+
+  {
+    text: "完成了今天的護眼任務。前進 2 格。",
+    effect: "move",
+    value: 2,
+    reminder: "🌟 養成良好的護眼習慣，才能幫助維持眼睛健康。"
+  },
+
+  {
+    text: "眼睛有點疲勞，閉眼休息一下吧。原地休息1回合。",
     effect: "rest",
-    value: 0
+    value: 0,
+    reminder: "🌟 休息時可以讓眼睛暫時離開書本、螢幕等近距離目標。"
   },
 
   {
-    text: "你完成了戶外活動，前進 3 格！",
-    effect: "move",
-    value: 3
-  },
-
-  {
-    text: "躺著滑手機太久，後退 2 格。",
+    text: "發現看不清楚黑板，沒有告訴家長。後退 2 格！",
     effect: "back",
-    value: 2
+    value: 2,
+    reminder: "🌟 發現視力異常時，應主動告知家長或老師。"
   },
 
   {
-    text: "你有記得保持適當閱讀距離，前進 1 格。",
-    effect: "move",
-    value: 1
-  },
-
-  {
-    text: "眼睛太累了，先休息一下吧。",
-    effect: "rest",
-    value: 0
-  },
-
-  {
-    text: "今天的護眼習慣不錯，前進 2 格！",
-    effect: "move",
-    value: 2
-  },
-
-  {
-    text: "長時間近距離用眼，後退 1 格。",
+    text: "眼睛不舒服，忍不住一直揉。後退 1 格。",
     effect: "back",
-    value: 1
+    value: 1,
+    reminder: "🌟 眼睛不適時不要揉眼，應尋求適當協助。"
+  },
+
+  {
+    text: "一直戴著不合適的眼鏡。後退 2 格。",
+    effect: "back",
+    value: 2,
+    reminder: "🌟 定期進行視力檢查以更換合適眼鏡。"
+  },
+
+  {
+    text: "看東西經常瞇著眼。後退 1 格。",
+    effect: "back",
+    value: 1,
+    reminder: "🌟 經常瞇眼可能是視力異常的警訊，應接受檢查"
+  },
+
+  {
+    text: "發現眼睛紅腫不舒服，趕快告訴大人。前進 3 格！",
+    effect: "move",
+    value: 3,
+    reminder: "🌟 眼睛出現異常症狀時，應及時尋求醫療協助。"
+  },
+
+  {
+    text: "發現眼鏡歪掉，趕快去驗光所調整好。前進 1 格。",
+    effect: "move",
+    value: 1,
+    reminder: "🌟 眼鏡應配戴端正，並定期檢查是否合適。"
   }
 
 ];
@@ -1670,480 +1779,480 @@ const quizCards = [
 
   {
     type: 0,
-    question: "閱讀或使用 3C 一段時間後，應該怎麼做？",
+    question: "「20-20-20」法則主要是為了什麼？",
     options: [
-      "繼續盯著螢幕",
-      "讓眼睛適度休息",
-      "把螢幕拿更近",
-      "關燈繼續使用"
+      "減少長時間近距離用眼造成的疲勞",
+      "增加眼睛的調節能力",
+      "增加每天睡眠時間",
+      "預防所有眼睛疾病"
     ],
-    answer: 1
+    answer: 0
   },
 
   {
     type: 0,
-    question: "如果眼睛感到疲勞，較適合的做法是？",
+    question: "你每天都戴著有度數的眼鏡，但最近看黑板仍然模糊。你應該怎麼做比較合適？",
     options: [
-      "休息一下",
-      "繼續用眼",
+      "把眼鏡摘掉，改瞇著眼睛看",
+      "自行換成更高度數的眼鏡",
+      "多吃胡蘿蔔改善",
+      "接受視力檢查"
+    ],
+    answer: 3
+  },
+
+  {
+    type: 0,
+    question: "下列關於「瞇眼看東西」的說法何者較正確?",
+    options: [
+      "可以永久改善近視",
+      "可以讓近視度數慢慢降低",
+      "有時能暫時讓模糊影像看起來比較清楚，但不能治療近視",
+      "可以完全取代眼鏡"
+    ],
+    answer: 2
+  },
+
+  {
+    type: 0,
+    question: "如果眼睛突然進入異物，哪種處理方式較適當？",
+    options: [
       "揉眼睛",
-      "增加螢幕亮度"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 0,
-    question: "保持良好的用眼習慣可以幫助？",
-    options: [
-      "減少眼睛負擔",
-      "讓眼睛不用休息",
-      "保證永遠不近視",
-      "讓視力立刻變好"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 0,
-    question: "眼睛乾澀時，以下哪個做法較適合？",
-    options: [
-      "一直揉眼睛",
-      "讓眼睛適度休息",
-      "一直盯著手機",
-      "待在黑暗中看螢幕"
-    ],
-    answer: 1
-  },
-
-  {
-    type: 0,
-    question: "長時間近距離用眼可能造成什麼？",
-    options: [
-      "眼睛疲勞",
-      "視力一定立刻恢復",
-      "眼睛完全不會疲勞",
-      "不會有任何影響"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 0,
-    question: "平常應該避免哪一種用眼方式？",
-    options: [
-      "適度休息",
-      "保持適當距離",
-      "長時間連續近距離用眼",
-      "到戶外活動"
+      "用衛生紙用力擦拭",
+      "先避免揉眼，必要時以乾淨清水或生理食鹽水沖洗",
+      "繼續使用手機讓眼淚流出來"
     ],
     answer: 2
   },
 
   {
     type: 0,
-    question: "眼睛出現持續不舒服的情況時，可以怎麼做？",
+    question: "下列哪個觀念是錯誤的？",
     options: [
-      "完全不理會",
-      "尋求專業檢查",
-      "一直揉眼睛",
-      "繼續熬夜"
+      "視力正常也需要維持良好的用眼習慣",
+      "定期接受視力檢查有助於了解視力狀況",
+      "只要吃很多蔬果，就可以抵消長時間近距離用眼",
+      "戶外活動不限於運動，可以看遠方的綠樹放鬆眼睛"
+    ],
+    answer: 2
+  },
+
+  {
+    type: 0,
+    question: "驗光師在進行視力及相關視覺功能檢查後，若發現受測者有需要進一步處理的視覺問題，可能會怎麼做？",
+    options: [
+      "開抗生素給對方，儘早為受測者治療",
+      "保證一定能治好，讓受測者放心",
+      "要求受測者停止所有閱讀行為，否則對眼睛會有危害",
+      "依檢查結果提供視覺矯正相關建議"
+    ],
+    answer: 3
+  },
+
+  {
+    type: 0,
+    question: "近視主要會造成什麼視覺問題？",
+    options: [
+      "近距離看不清楚、遠距離看得清楚",
+      "遠距離的物體較容易看不清楚",
+      "只能看到黑白",
+      "完全無法辨別顏色"
     ],
     answer: 1
   },
 
   {
     type: 0,
-    question: "良好的照明對閱讀有什麼幫助？",
+    question: "散光可能造成什麼視覺感受？",
     options: [
-      "減少用眼負擔",
-      "讓眼睛不用休息",
-      "一定可以治療近視",
-      "讓視力永久不變"
+      "可能讓眼前影像顯得模糊",
+      "通常只會影響遠距離視力",
+      "通常只會影響近距離視力",
+      "主要會造成色覺異常"
     ],
     answer: 0
   },
 
   {
     type: 0,
-    question: "日常生活中保護眼睛的重要方式之一是？",
+    question: "為什麼兒童與青少年需要定期檢查視力？",
     options: [
-      "規律休息",
-      "熬夜",
-      "長時間滑手機",
-      "躺著看書"
+      "可以及早發現視力問題",
+      "定期檢查就可以保證一輩子不會近視",
+      "可以讓眼睛變大",
+      "方便用檢查後的度數，自行購買隱形眼鏡"
     ],
     answer: 0
   },
 
   {
     type: 0,
-    question: "如果發現視力異常，較適合？",
+    question: "如果懷疑自己有眼睛疾病，為什麼不能只依靠驗光結果自行診斷？",
     options: [
-      "自行猜測原因",
-      "尋求眼科或驗光專業協助",
-      "繼續忍耐",
-      "增加手機使用時間"
+      "只要驗光結果正常，就代表眼睛沒有任何疾病",
+      "視力問題可能涉及不同原因，需要由眼科醫師進一步判斷",
+      "只要沒有疼痛，就代表不需要接受其他檢查",
+      "只要重新驗光幾次，就能確定是哪一種眼睛疾病"
     ],
     answer: 1
   },
 
   {
     type: 1,
-    question: "使用手機或平板時，應該避免？",
+    question: "晚上準備睡覺前，下列哪種使用3C的方式比較適當？",
     options: [
-      "適度休息",
-      "保持適當距離",
-      "長時間連續使用",
-      "調整螢幕亮度"
+      "躺在床上滑手機，直到感到想睡為止",
+      "睡前提早停止使用3C，讓自己有時間準備入睡",
+      "只要把手機亮度調到最低，就可以一直使用",
+      "關燈後再滑手機幾分鐘沒有關係"
+    ],
+    answer: 1
+  },
+
+  {
+    type: 1,
+    question: "環境黑暗時瞳孔會放大，因此在全黑環境下使用手機會對視覺造成負擔。你在關燈後收到一則訊息想回覆，請問怎麼做最合適？",
+    options: [
+      "直接回覆，一下子沒關係",
+      "開燈回覆，回完再關燈",
+      "既然要回覆，就一口氣回覆完",
+      "把手機亮度調高再回覆"
+    ],
+    answer: 1
+  },
+
+  {
+    type: 1,
+    question: "今天弟弟看了一整天的手機，手機沒電了，想要改看電視。他認為不同裝置就沒有影響，這個想法如何？",
+    options: [
+      "電視比手機的影響小，很合理",
+      "電視比手機的影響大，不太好",
+      "使用不同3C的時間應當一起考量，適當休息",
+      "認同，因為手機才是3C，電視不算"
     ],
     answer: 2
   },
 
   {
     type: 1,
-    question: "使用 3C 產品時，適當的做法是？",
+    question: "今天同學來你家看電視，你提醒他看電視要保持適當距離，但他說坐到螢幕前才看得清楚，你該如何應對最合適",
     options: [
-      "一直不休息",
-      "定時讓眼睛休息",
-      "越近越清楚所以越近越好",
-      "關燈使用"
-    ],
-    answer: 1
-  },
-
-  {
-    type: 1,
-    question: "手機螢幕太亮時，可以怎麼做？",
-    options: [
-      "適度調整亮度",
-      "調到最亮",
-      "關掉所有燈",
-      "把手機拿更近"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 1,
-    question: "使用 3C 時，應避免哪種姿勢？",
-    options: [
-      "保持適當距離",
-      "坐姿穩定",
-      "躺著長時間滑手機",
-      "適度休息"
+      "認為他說的也有道理，只要不會感到不適就好",
+      "幫忙把電視的亮度調低，或許會比較舒適",
+      "告訴他可能有視力問題，建議接受視力檢查",
+      "把電視的聲音調大，這樣他就會不得不往後坐"
     ],
     answer: 2
   },
 
   {
     type: 1,
-    question: "長時間滑手機後，應該？",
+    question: "今天你在用平板看影片時，發現眼睛開始感到酸澀和疲勞，你應該怎麼做最合適？",
     options: [
-      "繼續滑",
-      "讓眼睛休息",
-      "增加亮度",
-      "把手機拿近"
+      "忍耐一下，把影片看完",
+      "應該是錯覺，過一陣子就會沒事",
+      "把平板的亮度調暗一點，就會舒服很多了",
+      "放下平板休息，若還有不適便告訴家人前往檢查"
+    ],
+    answer: 3
+  },
+
+  {
+    type: 1,
+    question: "小明要完成課堂報告，需要用電腦一段時間，身為他的好朋友，你會建議他怎麼做？",
+    options: [
+      "隔一段時間就提醒他休息，讓他注意看屏幕的距離",
+      "等他做完一部分內容，就邀請她一起打遊戲放鬆一下眼睛",
+      "把報告一次做完，速度才會比較快，對眼睛的危害較低",
+      "為了分擔他的壓力，和他一起熬夜完成報告"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 1,
+    question: "你在寫作業時，手機不停地跳出新訊息，你該怎麼做最合適？",
+    options: [
+      "寫作業很耗精神，偶爾可以回訊息滑手機當作休息",
+      "當出現新訊息時就拿起來回覆，沒有訊息時再繼續寫作業",
+      "同時進行，這樣也才比較有效率",
+      "寫完作業後，適當休息後再使用手機"
+    ],
+    answer: 3
+  },
+
+  {
+    type: 1,
+    question: "妹妹房間的燈壞掉了，她便把手機調到最暗，當你發現這件事時，你該怎麼做最適當？",
+    options: [
+      "提醒她手機亮度調太暗也會傷眼，並尋求家長協助，讓環境照明適當",
+      "建議她把亮度調到最高，這樣才能和較暗的環境抵消",
+      "認為她做的事情很合理，越暗的地方手機亮度就要越暗",
+      "建議她直接關燈，手機的亮度調高就能成為環境光源"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 1,
+    question: "小安正在用電腦完成報告，發現自己為了看清楚文字，越坐越靠近螢幕。下列哪個做法比較適當？",
+    options: [
+      "繼續靠近，反正看得清楚比較重要",
+      "把螢幕拿得更近，並將字體調小",
+      "調整螢幕或文字大小，並保持適當觀看距離",
+      "關掉房間的燈，讓螢幕看起來更清楚"
+    ],
+    answer: 2
+  },
+
+  {
+    type: 1,
+    question: "你的弟弟是兩歲以下的小孩，而你擁有手機和平板，怎麼做比較適當？",
+    options: [
+      "擁有一台設備就夠了，可以分享其中一台給弟弟看",
+      "使用手機或平板時，可以和弟弟一起看卡通",
+      "建議家長也給弟弟買手機和平板使用",
+      "兩歲以下須避免看屏幕，讓他先接觸3C以外的事物"
+    ],
+    answer: 3
+  },
+
+  {
+    type: 2,
+    question: "閱讀書籍時，眼睛與書本最好保持多少距離？",
+    options: [
+      "35~45公分",
+      "5~10公分",
+      "1~5公分",
+      "距離不影響"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 2,
+    question: "近距離閱讀30分鐘後，應該怎麼做？",
+    options: [
+      "繼續看完再休息",
+      "揉一下眼睛再繼續，眼睛才比較不會酸痛",
+      "改看手機，看影片休息",
+      "休息10分鐘，看遠處"
+    ],
+    answer: 3
+  },
+
+  {
+    type: 2,
+    question: "你買了一本書，想要找個地方欣賞。你認為在以下哪種環境閱讀最合適？",
+    options: [
+      "關著大燈但開著檯燈的房間",
+      "光線昏暗的氛圍咖啡廳",
+      "時不時有陽光透射進來的車上",
+      "光線充足、亮度均勻的圖書館"
+    ],
+    answer: 3
+  },
+
+  {
+    type: 2,
+    question: "閱讀時的光線應該如何？",
+    options: [
+      "光線充足且均勻，避免反光",
+      "越暗越好，避免眼睛不舒服",
+      "越亮越好，避免看不清",
+      "用閃爍的燈，避免打瞌睡"
+    ],
+    answer: 0
+  },
+
+  {
+    type: 2,
+    question: "閱讀或寫字時，為避免慣用手遮住光線，檯燈通常建議放在慣用手的對側。右手寫字的人，檯燈最好放在哪一邊？",
+    options: [
+      "右前方",
+      "左前方",
+      "正前方",
+      "正後方"
     ],
     answer: 1
   },
 
   {
-    type: 1,
-    question: "使用電腦時，螢幕位置應？",
-    options: [
-      "保持適當距離",
-      "貼著臉",
-      "越近越好",
-      "完全不需要注意"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 1,
-    question: "晚上使用手機時，較好的做法是？",
-    options: [
-      "關掉室內燈",
-      "保持適當環境照明",
-      "把螢幕調到最亮",
-      "一直使用到睡著"
-    ],
-    answer: 1
-  },
-
-  {
-    type: 1,
-    question: "使用 3C 時覺得眼睛疲勞，應該？",
-    options: [
-      "休息",
-      "繼續使用",
-      "揉眼睛",
-      "把螢幕靠近"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 1,
-    question: "長時間使用 3C 時，哪個習慣較好？",
-    options: [
-      "適度休息",
-      "完全不眨眼",
-      "一直盯著螢幕",
-      "躺著使用"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 1,
-    question: "使用手機時，下列哪項較符合護眼原則？",
-    options: [
-      "保持適當距離並適時休息",
-      "關燈滑手機",
-      "連續使用數小時",
-      "螢幕越近越好"
-    ],
-    answer: 0
-  },
-
-  {
     type: 2,
-    question: "閱讀時應保持？",
+    question: "很多人會在行進的公車或捷運上看書，例如背單字、看小說。關於這種行為對眼睛的影響，你認為何者較正確？",
     options: [
-      "適當距離",
-      "書本貼著臉",
-      "躺著看",
-      "趴著看"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 2,
-    question: "閱讀環境應該？",
-    options: [
-      "光線適當",
-      "完全沒有光",
-      "只有螢幕光",
-      "越暗越好"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 2,
-    question: "長時間閱讀後應該？",
-    options: [
-      "繼續閱讀",
-      "適度休息",
-      "把書拿近",
-      "關燈閱讀"
+      "車上光線通常充足，因此不會影響眼睛",
+      "車輛行進時容易晃動，不適合長時間閱讀",
+      "需要把書拿近一點，才能減少晃動造成的影響",
+      "沒有影響，是善用零碎時間閱讀的好方法"
     ],
     answer: 1
   },
 
   {
     type: 2,
-    question: "哪一種閱讀習慣較不理想？",
+    question: "小杰和小安都喜歡看書。小杰每天一次連續閱讀兩小時；小安則將閱讀時間分段安排，中間會休息，也會安排戶外活動。下列哪個說法比較適當？",
     options: [
-      "保持距離",
-      "適當照明",
-      "躺著長時間閱讀",
-      "定時休息"
+      "小杰一次閱讀完的方法比較妥當，對眼睛的傷害較小",
+      "閱讀就算是休息的一部分，兩者都沒有問題",
+      "小安的安排較能避免長時間持續近距離用眼",
+      "小杰每天都有閱讀，就不需要進行戶外活動"
     ],
     answer: 2
   },
 
   {
     type: 2,
-    question: "閱讀時姿勢的重要性是？",
+    question: "你正在看書，窗戶的陽光很強，書本上出現明顯反光，讓你看起來很吃力。下列哪個做法比較適當？",
     options: [
-      "有助於維持良好閱讀習慣",
-      "完全沒有關係",
-      "越靠近越好",
-      "一定可以治療近視"
+      "忍耐一下，試著讓眼睛適應",
+      "把書拿得更近，避開反光",
+      "調整座位或光線，減少書面反光與過強的光線刺激",
+      "閉上其中一隻眼睛繼續閱讀"
+    ],
+    answer: 2
+  },
+
+  {
+    type: 2,
+    question: "你正在閱讀一本漫畫，突然發現自己開始覺得眼睛疲勞。下列哪個做法比較適當？",
+    options: [
+      "趕快把這本漫畫看完，再好好休息",
+      "揉眼睛後再繼續閱讀",
+      "把漫畫拿近一點，避免看不清楚而疲勞的問題",
+      "先停止閱讀，讓眼睛休息一下"
+    ],
+    answer: 3
+  },
+
+  {
+    type: 2,
+    question: "你注意到同學在寫作業時，喜歡一邊趴在桌上，一邊把書本放得很近。下列哪個建議比較適合他？",
+    options: [
+      "提醒他保持正確坐姿，並與書本維持適當距離",
+      "告訴他趴著閱讀，可以讓身體比較放鬆",
+      "只要教室的燈夠亮，就不考慮閱讀姿勢",
+      "建議他書本的位置越靠近自己越好，比較不會用眼疲勞"
     ],
     answer: 0
   },
 
   {
-    type: 2,
-    question: "看書時應避免？",
+    type: 3,
+    question: "今天你擁有一整天空閒的時間，下列哪個安排最適當？",
     options: [
-      "適當照明",
-      "長時間近距離閱讀",
-      "定時休息",
-      "保持距離"
+      "整天待在家打遊戲，偶爾閉眼睛休息",
+      "安排適當的戶外活動，減少長時間待在室內使用3C",
+      "看一整天的小說，晚上出去散步10分鐘就好",
+      "沒有玩手機的打算，所以不安排戶外活動"
     ],
     answer: 1
   },
 
   {
-    type: 2,
-    question: "閱讀時如果眼睛疲勞，可以？",
+    type: 3,
+    question: "你花了兩小時寫完作業後，什麼樣的休息方式最合適？",
     options: [
-      "休息一下",
-      "繼續看",
-      "把書拿近",
-      "揉眼睛"
+      "用手機開護眼模式玩遊戲",
+      "到戶外走走，讓眼睛看遠處",
+      "為了休息不看小說，而是看漫畫",
+      "用投影機躺在床上看電影"
     ],
-    answer: 0
+    answer: 1
   },
 
   {
-    type: 2,
-    question: "適當的閱讀距離可以幫助？",
+    type: 3,
+    question: "小婷和家人到戶外活動，當天陽光很強。下列哪個做法比較適當？",
     options: [
-      "減少近距離用眼負擔",
-      "讓眼睛不用休息",
-      "保證不近視",
-      "讓視力立即變好"
+      "因為在戶外，所以不需要注意眼睛防護",
+      "直接盯著陽光看，讓眼睛適應",
+      "適當利用遮陽帽、太陽眼鏡等方式減少強烈陽光刺激",
+      "戴上太陽眼鏡後，就可以直視太陽"
     ],
-    answer: 0
+    answer: 2
   },
 
   {
-    type: 2,
-    question: "以下哪個閱讀環境較合適？",
+    type: 3,
+    question: "今天下大雨，你原本安排的戶外活動無法進行，因此你整天待在家。下列哪個做法比較適當？",
     options: [
-      "光線適當",
-      "完全黑暗",
-      "只有手機光",
-      "非常刺眼的光"
+      "因為不能出門，所以可以一直使用3C，明天再出門就好",
+      "改安排其他不需要長時間近距離用眼的室內活動，並適當休息",
+      "把手機亮度調低，這樣才能使用一整天",
+      "將原本用電腦玩遊戲的娛樂，改為看電視裡的綜藝節目"
     ],
-    answer: 0
+    answer: 1
   },
 
   {
-    type: 2,
-    question: "養成良好閱讀習慣的重點之一是？",
+    type: 3,
+    question: "弟弟以為戶外活動一定要跑步或打球，因此假日都不願意出門。下列哪個活動你可以建議他嘗試比較合適？",
     options: [
-      "適度休息",
-      "熬夜閱讀",
-      "趴著看書",
-      "越近越好"
+      "去森林公園散步",
+      "去網咖打遊戲",
+      "去電影院看剛上映的恐怖片",
+      "去圖書館看漫畫"
     ],
     answer: 0
   },
 
   {
     type: 3,
-    question: "日常生活中適度進行戶外活動有什麼好處？",
+    question: "小華放學後有一個小時的空閒時間，若他平常已經有不少時間使用3C，下列哪個安排最適當？",
     options: [
-      "有助於維持良好用眼習慣",
-      "可以完全取代睡眠",
-      "可以保證不近視",
-      "可以不用休息"
+      "繼續使用手機，滑手機也是一種休息",
+      "一定要跑步一個小時，這樣對身體比較健康",
+      "把這一小時全用來看書，閱讀比用3C更適合休息",
+      "選擇到戶外進行適當活動，讓休閒方式更多元"
     ],
-    answer: 0
+    answer: 3
   },
 
   {
     type: 3,
-    question: "下課或休息時，可以做什麼？",
+    question: "小傑平常幾乎不進行戶外活動，但每個月最後一個星期日都會跟家人爬山一整天。他認為這樣就代表平常不用安排戶外活動。下列哪個說法比較適當？",
     options: [
-      "到戶外活動",
-      "繼續滑手機",
-      "繼續近距離閱讀",
-      "一直盯著電腦"
+      "正確，只要偶爾一次活動即可",
+      "正確，畢竟他爬了一整天",
+      "不一定，日常生活中也應適當安排戶外活動，而不是只集中在少數幾天",
+      "不正確，因為爬山對眼睛沒有幫助"
     ],
-    answer: 0
+    answer: 2
   },
 
   {
     type: 3,
-    question: "戶外活動時可以？",
+    question: "今天沒有陽光，天氣也比較涼，小凱覺得沒有太陽就沒有必要到戶外。下列哪個說法最適當？",
     options: [
-      "適度看看遠方",
-      "一直盯著手機",
-      "躲在黑暗中",
-      "完全不休息"
+      "沒有太陽就不能進行戶外活動",
+      "只要天候與環境安全，仍可以進行適當的戶外活動",
+      "陰天比晴天更傷眼，所以不適合安排戶外活動",
+      "可能會下雨，待在室內使用3C比較保險"
     ],
-    answer: 0
+    answer: 1
   },
 
   {
     type: 3,
-    question: "良好的生活習慣包含？",
+    question: "「30-10-120護眼操」的30、10、120，分別代表什麼？",
     options: [
-      "適度戶外活動",
-      "長時間使用 3C",
-      "熬夜",
-      "長時間近距離用眼"
+      "用眼每30分鐘，休息10秒，每日有氧運動120分鐘以上",
+      "玩手機每30分鐘，休息10分鐘，每日無氧運動120分鐘以上",
+      "運動每30分鐘，休息10分鐘，每日閱讀120分鐘以上",
+      "用眼每30分鐘，休息10分鐘，每日戶外活動120分鐘以上"
     ],
-    answer: 0
+    answer: 3
   },
 
   {
     type: 3,
-    question: "戶外活動可以讓我們？",
+    question: "下列哪一種戶外環境較符合護眼的「亮、寬、廣、遠」原則？",
     options: [
-      "離開近距離用眼的環境",
-      "完全不用睡覺",
-      "不用控制 3C 使用",
-      "保證視力不變"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 3,
-    question: "下列哪個比較適合作為日常休息方式？",
-    options: [
-      "戶外活動",
-      "連續滑手機",
-      "一直看書",
-      "一直看電腦"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 3,
-    question: "戶外活動時也要注意？",
-    options: [
-      "適當防曬與眼睛保護",
-      "一直盯著太陽",
-      "完全不需要保護",
-      "只看手機"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 3,
-    question: "培養戶外活動習慣可以幫助我們？",
-    options: [
-      "建立較健康的生活方式",
-      "完全不需要休息",
-      "不用睡覺",
-      "不用注意用眼"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 3,
-    question: "休息時間可以選擇？",
-    options: [
-      "到戶外走走",
-      "繼續玩手機",
-      "繼續近距離看書",
-      "繼續看電腦"
-    ],
-    answer: 0
-  },
-
-  {
-    type: 3,
-    question: "下列哪個屬於良好的戶外生活習慣？",
-    options: [
-      "規律安排戶外活動",
-      "整天待在室內使用 3C",
-      "熬夜",
-      "長時間近距離閱讀"
+      "空間開闊、視野良好的公園",
+      "被高牆包圍、視野受限的籃球場",
+      "樹木茂密、光線較不足的林間步道",
+      "周圍建築物密集、視野較近的都市廣場"
     ],
     answer: 0
   }
@@ -2249,6 +2358,9 @@ function drawCard() {
   quizOptions.innerHTML =
     "";
 
+  document.getElementById("eventReminder").style.display = "none";
+  document.getElementById("eventReminder").textContent = "";
+
   closeButton.style.display =
     "none";
 
@@ -2310,6 +2422,15 @@ function drawEventCard(card) {
     "cardText"
   ).textContent =
     card.text;
+
+  const eventReminder =
+    document.getElementById("eventReminder");
+
+  eventReminder.textContent =
+    card.reminder || "";
+
+  eventReminder.style.display =
+    card.reminder ? "block" : "none";
 
   document.getElementById(
     "quizOptions"
@@ -2421,6 +2542,8 @@ function drawQuizCard(card) {
     "cardText"
   ).textContent =
     currentQuiz.question;
+
+  document.getElementById("eventReminder").style.display = "none";
 
   const optionsContainer =
     document.getElementById(
@@ -2847,6 +2970,11 @@ function rollBotDice() {
   setTimeout(
     () => {
 
+      // 機器人也要停在實際擲出的點數
+      diceCube.classList.remove("dice-rolling");
+      diceCube.style.transform =
+        diceTransforms[dice];
+
       diceNumber.textContent =
         `🎲 擲出：${dice}`;
 
@@ -2886,82 +3014,61 @@ document
   );
 
 </script>
-<!-- ==================== 🧪 測試資訊 ==================== -->
-
+<!-- ==================== 🧪 測試資訊面板 ==================== -->
 <div id="testPanel">
   <div class="test-title">🧪 測試資訊</div>
 
-  <div class="test-row">
+  <div>
     ⏱️ 遊玩時間：
     <span id="testTime">00:00:00</span>
   </div>
 
-  <div class="test-row">
+  <div>
     🎴 牌堆剩餘：
     <span id="testPile">60</span> / 60
   </div>
 
-  <div class="test-row test-card-row">
+  <div>
     🃏 已抽卡片：
-    <div id="testCards">尚未抽牌</div>
+    <span id="testCards">尚未抽牌</span>
   </div>
 </div>
-
 
 <style>
   #testPanel {
     position: fixed;
     right: 15px;
     bottom: 15px;
+    z-index: 9999;
 
-    width: 270px;
+    width: 260px;
     padding: 14px 16px;
 
-    z-index: 99999;
-
-    background: rgba(25, 25, 35, 0.94);
+    background: rgba(20, 20, 30, 0.92);
     color: white;
-
     border-radius: 12px;
 
     font-size: 14px;
     line-height: 1.8;
 
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-
-    pointer-events: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
   }
 
   #testPanel .test-title {
     font-size: 17px;
     font-weight: bold;
-    margin-bottom: 6px;
-  }
-
-  #testPanel .test-row {
-    margin-bottom: 4px;
+    margin-bottom: 5px;
   }
 
   #testCards {
-    margin-top: 3px;
-
-    max-height: 130px;
-    overflow-y: auto;
-
     word-break: break-word;
   }
 </style>
 
-
 <script>
-/* =====================================================
-   🧪 測試資訊
-   ===================================================== */
+/* ==================== 🧪 測試資訊 ==================== */
 
-
-/* =====================================================
-   ① 遊玩時間
-   ===================================================== */
+/* ---------- 計時器 ---------- */
 
 let testStartTime = null;
 let testEndTime = null;
@@ -2971,305 +3078,186 @@ let testTimer = null;
 /* 開始計時 */
 function startTestTimer() {
 
-  // 已經開始過就不重新開始
+  // 避免重複開始
   if (testStartTime !== null) return;
 
   testStartTime = Date.now();
 
   updateTestTime();
 
-  testTimer = setInterval(function () {
-
-    // 遊戲結束
-    if (
-      typeof gameOver !== "undefined" &&
-      gameOver === true
-    ) {
-      stopTestTimer();
-      return;
-    }
-
-    updateTestTime();
-
-  }, 1000);
+  testTimer = setInterval(updateTestTime, 1000);
 }
 
 
 /* 停止計時 */
 function stopTestTimer() {
 
-  if (testTimer !== null) {
+  if (testStartTime === null) return;
 
-    clearInterval(testTimer);
-
-    testTimer = null;
-  }
-
-  if (testEndTime === null) {
-
-    testEndTime = Date.now();
-
-  }
+  testEndTime = Date.now();
 
   updateTestTime();
+
+  if (testTimer !== null) {
+    clearInterval(testTimer);
+    testTimer = null;
+  }
 }
 
 
 /* 更新時間 */
 function updateTestTime() {
 
-  const timeElement =
-    document.getElementById("testTime");
+  const timeElement = document.getElementById("testTime");
 
-  if (!timeElement) return;
-
-
-  // 尚未開始遊戲
+  // 還沒開始遊戲
   if (testStartTime === null) {
-
-    timeElement.textContent =
-      "00:00:00";
-
+    timeElement.textContent = "00:00:00";
     return;
   }
-
 
   const endTime =
     testEndTime !== null
       ? testEndTime
       : Date.now();
 
-
   const elapsed =
-    Math.floor(
-      (endTime - testStartTime) / 1000
-    );
+    Math.floor((endTime - testStartTime) / 1000);
 
-
-  const hours =
-    Math.floor(elapsed / 3600);
-
+  const hours = Math.floor(elapsed / 3600);
 
   const minutes =
-    Math.floor(
-      (elapsed % 3600) / 60
-    );
-
+    Math.floor((elapsed % 3600) / 60);
 
   const seconds =
     elapsed % 60;
 
-
   timeElement.textContent =
-    String(hours).padStart(2, "0") +
-    ":" +
-    String(minutes).padStart(2, "0") +
-    ":" +
+    String(hours).padStart(2, "0") + ":" +
+    String(minutes).padStart(2, "0") + ":" +
     String(seconds).padStart(2, "0");
 }
 
 
-/* =====================================================
-   ② 偵測「開始遊戲」
-   ===================================================== */
+/* ---------- 抽卡紀錄 ---------- */
 
-document.addEventListener("click", function (event) {
+let testDrawnCards = [];
 
-  const button =
-    event.target.closest("button");
-
-  if (!button) return;
-
-
-  const text =
-    button.textContent.trim();
-
-
-  if (
-    text.includes("開始遊戲") ||
-    text.includes("開始遊玩")
-  ) {
-
-    startTestTimer();
-
-  }
-
-});
-
-
-/* =====================================================
-   ③ 監測遊戲結束
-   ===================================================== */
-
-setInterval(function () {
-
-  if (
-    testStartTime !== null &&
-    testEndTime === null &&
-    typeof gameOver !== "undefined" &&
-    gameOver === true
-  ) {
-
-    stopTestTimer();
-
-  }
-
-}, 200);
-
-
-/* =====================================================
-   ④ 牌堆剩餘數量
-   ===================================================== */
 
 function updateTestPile() {
 
   const pileElement =
     document.getElementById("testPile");
 
-  if (!pileElement) return;
-
-
-  if (
-    typeof drawPile !== "undefined" &&
-    Array.isArray(drawPile)
-  ) {
-
-    pileElement.textContent =
-      drawPile.length;
-
+  if (typeof drawPile !== "undefined") {
+    pileElement.textContent = drawPile.length;
   }
 }
 
 
-setInterval(function () {
-
-  updateTestPile();
-
-}, 300);
-
-
-/* =====================================================
-   ⑤ 抽卡紀錄
-   ===================================================== */
-
-let testDrawnCards = [];
-
-
-/*
-   找出目前牌堆和上一刻牌堆的差異。
-   如果少了一張卡，就代表抽出了一張卡。
-*/
-
-let testPreviousPileIds = null;
-
-
-function checkTestDraw() {
-
-  if (
-    typeof drawPile === "undefined" ||
-    !Array.isArray(drawPile)
-  ) {
-    return;
-  }
-
-
-  const currentIds =
-    drawPile.map(function (card) {
-
-      return card.id;
-
-    });
-
-
-  // 第一次取得牌堆
-  if (testPreviousPileIds === null) {
-
-    testPreviousPileIds =
-      currentIds.slice();
-
-    return;
-  }
-
-
-  /*
-     找出上一刻有、現在沒有的卡片
-  */
-
-  const removedIds =
-    testPreviousPileIds.filter(function (id) {
-
-      return !currentIds.includes(id);
-
-    });
-
-
-  /*
-     如果剛好少一張
-     → 就是抽到的卡片
-  */
-
-  if (removedIds.length === 1) {
-
-    testDrawnCards.push(
-      removedIds[0]
-    );
-
-    updateTestCards();
-
-  }
-
-
-  /*
-     如果牌堆突然重新補滿
-     代表 60 張抽完後重新洗牌。
-     這時不把它當成抽卡。
-  */
-
-  testPreviousPileIds =
-    currentIds.slice();
-}
-
-
-/* 更新抽卡顯示 */
 function updateTestCards() {
 
   const cardElement =
     document.getElementById("testCards");
 
-  if (!cardElement) return;
-
-
   if (testDrawnCards.length === 0) {
-
-    cardElement.textContent =
-      "尚未抽牌";
-
+    cardElement.textContent = "尚未抽牌";
     return;
   }
 
-
   cardElement.textContent =
     testDrawnCards
-      .map(function (id) {
-
-        return "#" + id;
-
-      })
+      .map(id => "#" + id)
       .join("、");
 }
 
 
-/* 每 100 毫秒檢查一次 */
-setInterval(function () {
+/* ---------- 攔截原本的 drawCard ---------- */
 
-  checkTestDraw();
+if (typeof drawCard === "function") {
 
-}, 100);
+  const originalDrawCard = drawCard;
+
+  drawCard = function() {
+
+    const beforeIds =
+      typeof drawPile !== "undefined"
+        ? drawPile.map(card => card.id)
+        : [];
+
+    // 執行原本的抽卡
+    originalDrawCard();
+
+    const afterIds =
+      typeof drawPile !== "undefined"
+        ? drawPile.map(card => card.id)
+        : [];
+
+    // 找出被抽走的卡片
+    const drawnId =
+      beforeIds.find(id => !afterIds.includes(id));
+
+    if (drawnId !== undefined) {
+      testDrawnCards.push(drawnId);
+    }
+
+    updateTestPile();
+    updateTestCards();
+  };
+}
 
 
-/* =====================================================
-   ⑥ 初始狀態
-   ===================================================== */
+/* ---------- 監測「開始遊戲」 ---------- */
+
+/*
+   找到頁面上的開始遊戲按鈕。
+   按下後才開始計時。
+*/
+
+document.addEventListener("click", function(event) {
+
+  const button = event.target.closest("button");
+
+  if (!button) return;
+
+  const buttonText =
+    button.textContent.trim();
+
+  if (
+    buttonText.includes("開始遊戲") ||
+    buttonText.includes("開始遊玩")
+  ) {
+    startTestTimer();
+  }
+
+});
+
+
+/* ---------- 監測遊戲結束 ---------- */
+
+/*
+   如果原本程式裡的 gameOver 變成 true，
+   就停止計時。
+*/
+
+setInterval(function() {
+
+  if (
+    typeof gameOver !== "undefined" &&
+    gameOver === true
+  ) {
+    stopTestTimer();
+  }
+
+}, 200);
+
+
+/* ---------- 定期更新牌堆 ---------- */
+
+setInterval(updateTestPile, 300);
+
+
+/* ---------- 初始狀態 ---------- */
 
 updateTestTime();
 updateTestPile();
