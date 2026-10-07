@@ -83,6 +83,106 @@ h1 {
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
+#questionBank {
+  display: none;
+  width: 94%;
+  max-width: 1000px;
+  min-height: 78vh;
+  margin: 30px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+#questionBank h2 {
+  text-align: center;
+  color: #526fa9;
+}
+
+.question-bank-tabs {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.question-bank-tab {
+  flex: 1;
+  padding: 11px;
+  border: none;
+  border-radius: 10px;
+  background: #dfe7f5;
+  color: #526fa9;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.question-bank-tab.selected {
+  background: #6685c5;
+  color: white;
+}
+
+.question-bank-list {
+  max-height: 62vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.question-bank-item {
+  padding: 15px;
+  margin-bottom: 12px;
+  background: #f5f7fc;
+  border-radius: 12px;
+  border-left: 4px solid #6685c5;
+}
+
+.question-bank-item h3 {
+  margin: 0 0 8px;
+  color: #526fa9;
+  font-size: 17px;
+}
+
+.question-bank-question {
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+
+.question-bank-answer {
+  padding: 9px 11px;
+  background: #fff8df;
+  border-radius: 8px;
+  color: #7a6330;
+  line-height: 1.6;
+}
+
+.question-bank-reminder {
+  margin-top: 8px;
+  padding: 9px 11px;
+  background: #eef5ff;
+  border-radius: 8px;
+  color: #526fa9;
+  line-height: 1.6;
+}
+
+
+#closeQuestionBank {
+  width: 100%;
+  padding: 13px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #6685c5;
+  color: white;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.quiz-option.bot-locked {
+  cursor: default;
+  opacity: 0.72;
+}
+
+
 #rulesScreen h2 {
   text-align: center;
   color: #526fa9;
@@ -622,7 +722,79 @@ h1 {
   color: #e19b38;
 }
 
-#restartGame {
+/* ==================== 錯題整理 ==================== */
+ .win-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.win-actions button {
+  min-width: 130px;
+}
+
+.wrong-questions {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f7f8fc;
+  border-radius: 14px;
+  text-align: left;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.wrong-questions h3 {
+  margin: 0 0 12px;
+  text-align: center;
+  color: #6685c5;
+}
+
+.wrong-player-title {
+  margin: 12px 0 8px;
+  font-weight: bold;
+  color: #526fa9;
+}
+
+.wrong-question-item {
+  padding: 12px;
+  margin-bottom: 10px;
+  background: white;
+  border-radius: 10px;
+  border-left: 4px solid #e19b38;
+}
+
+.wrong-question-item:last-child {
+  margin-bottom: 0;
+}
+
+.wrong-question-number {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.wrong-question-text {
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.wrong-answer {
+  color: #e19b38;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+.no-wrong-questions {
+  text-align: center;
+  padding: 10px;
+  color: #6685c5;
+  font-weight: bold;
+}
+
+#restartGame,
+#postTestFromWin,
+#postTestFromBank {
   padding: 12px 25px;
 
   border: none;
@@ -635,6 +807,11 @@ h1 {
   font-size: 17px;
 
   cursor: pointer;
+}
+
+#postTestFromWin,
+#postTestFromBank {
+  margin-top: 10px;
 }
 
 @media (max-width: 900px) {
@@ -744,6 +921,39 @@ h1 {
 
   <button id="startGame">
     確認設定
+  </button>
+</div>
+
+<div id="questionBank">
+
+  <h2>📚 題庫</h2>
+
+  <div class="question-bank-tabs">
+
+    <button
+      class="question-bank-tab selected"
+      data-bank="event"
+    >
+      🎴 普通事件卡
+    </button>
+
+    <button
+      class="question-bank-tab"
+      data-bank="quiz"
+    >
+      ❓ 特殊事件卡
+    </button>
+
+  </div>
+
+  <div id="questionBankList" class="question-bank-list"></div>
+
+  <button id="closeQuestionBank">
+    🎮 再玩一次
+  </button>
+
+  <button id="postTestFromBank">
+    📝 前往後測
   </button>
 
 </div>
@@ -948,17 +1158,36 @@ h1 {
 
     <div id="winnerBadges"></div>
 
-    <br>
+    <div id="wrongQuestions" class="wrong-questions"></div>
 
-    <button id="restartGame">
-      重新開始
-    </button>
+    <div class="win-actions">
+
+      <button id="restartGame">
+        再玩一次
+      </button>
+
+      <button id="openQuestionBankFromWin">
+        📚 查看題庫
+      </button>
+
+      <button id="postTestFromWin">
+        📝 前往後測
+      </button>
+
+    </div>
 
   </div>
 
 </div>
 
 <script>
+
+/* ==================================================
+   📝 後測問卷連結
+   把下面的網址換成你的 Google 表單／後測問卷網址即可。
+   勝利頁面與題庫頁面的「前往後測」都會使用這個網址。
+================================================== */
+const POST_TEST_URL = "https://docs.google.com/forms/d/e/1FAIpQLSelTKKEhknNq8OVBzatJEy7py45Nq9TeIzOxygWynE0a2rCrA/viewform?usp=publish-editor";
 
 const playerIcons = [
   "🧍",
@@ -1106,6 +1335,157 @@ const actualBoardPositions = [
 const eventCells = [
   2, 4, 7, 9, 11, 14, 16, 19, 21
 ];
+
+
+let currentQuestionBank = "event";
+
+function renderQuestionBank(bankType = currentQuestionBank) {
+
+  currentQuestionBank = bankType;
+
+  const list =
+    document.getElementById("questionBankList");
+
+  if (!list) return;
+
+  document
+    .querySelectorAll(".question-bank-tab")
+    .forEach(button => {
+      button.classList.toggle(
+        "selected",
+        button.dataset.bank === bankType
+      );
+    });
+
+  if (bankType === "event") {
+
+    let html = "";
+
+    eventCards.forEach((card, index) => {
+
+      html += `
+        <div class="question-bank-item">
+
+          <h3>🎴 普通事件卡 #${card.id || index + 1}</h3>
+
+          <div class="question-bank-question">
+            ${card.text}
+          </div>
+
+          ${
+            card.reminder
+              ? `<div class="question-bank-reminder">
+                   💡 小提醒：${card.reminder}
+                 </div>`
+              : ""
+          }
+
+        </div>
+      `;
+
+    });
+
+    list.innerHTML = html;
+
+  }
+
+  else {
+
+    let html = "";
+
+    quizCards.forEach((card, index) => {
+
+      html += `
+        <div class="question-bank-item">
+
+          <h3>
+            ❓ 特殊事件卡 #${card.id || index + 1}
+            ${badgeTypes[card.type].icon}
+            ${badgeTypes[card.type].name}
+          </h3>
+
+          <div class="question-bank-question">
+            <strong>題目：</strong>${card.question}
+          </div>
+
+          <div class="question-bank-answer">
+            <strong>✅ 正確答案：</strong>
+            ${card.options[card.answer]}
+          </div>
+
+        </div>
+      `;
+
+    });
+
+    list.innerHTML = html;
+
+  }
+
+}
+
+let questionBankFromWin = false;
+
+document
+  .getElementById("openQuestionBankFromWin")
+  .addEventListener(
+    "click",
+    () => {
+
+      questionBankFromWin = true;
+
+      // 題庫視為獨立頁面：隱藏其他畫面，只顯示題庫。
+      document.getElementById("setup").style.display = "none";
+      document.getElementById("rulesScreen").style.display = "none";
+      document.getElementById("game").style.display = "none";
+      document.getElementById("winOverlay").style.display = "none";
+      document.getElementById("questionBank").style.display = "block";
+
+      renderQuestionBank("event");
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+  );
+
+document
+  .getElementById("closeQuestionBank")
+  .addEventListener(
+    "click",
+    () => {
+
+      // 題庫的「再玩一次」直接回到最初的人數選擇頁。
+      document.getElementById("questionBank").style.display = "none";
+      document.getElementById("winOverlay").style.display = "none";
+      document.getElementById("game").style.display = "none";
+      document.getElementById("rulesScreen").style.display = "none";
+      document.getElementById("setup").style.display = "block";
+
+      questionBankFromWin = false;
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+  );
+
+document
+  .querySelectorAll(".question-bank-tab")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+        renderQuestionBank(button.dataset.bank);
+      }
+    );
+
+  });
 
 function createBoard() {
 
@@ -1265,6 +1645,10 @@ document
     "click",
     () => {
 
+      // 每次真正按下「開始遊戲」時，都重新建立並洗牌完整 60 張卡片
+      // 確保上一局抽過的卡片不會被帶進下一局
+      resetDrawPile();
+
       players = [];
 
       players.push({
@@ -1279,7 +1663,9 @@ document
 
         badges: [0,0,0,0],
 
-        rest: false
+        rest: false,
+
+        wrongQuestions: []
 
       });
 
@@ -1311,7 +1697,9 @@ document
 
           badges: [0,0,0,0],
 
-          rest: false
+          rest: false,
+
+          wrongQuestions: []
 
         });
 
@@ -2571,10 +2959,18 @@ function drawQuizCard(card) {
         "click",
         () => {
 
+          // 機器人回合不允許玩家代答
+          if (player.type === "bot") return;
+
           checkAnswer(index);
 
         }
       );
+
+      if (player.type === "bot") {
+        button.disabled = true;
+        button.classList.add("bot-locked");
+      }
 
       optionsContainer.appendChild(
         button
@@ -2582,6 +2978,14 @@ function drawQuizCard(card) {
 
     }
   );
+
+  if (player.type === "bot") {
+    document.getElementById(
+      "cardText"
+    ).textContent =
+      currentQuiz.question +
+      "\n\n🤖 機器人思考中…";
+  }
 
   document.getElementById(
     "closeCard"
@@ -2643,12 +3047,12 @@ function botAnswer() {
 
   }
 
-  checkAnswer(answer);
+  checkAnswer(answer, true);
 
 }
 
 
-function checkAnswer(answer) {
+function checkAnswer(answer, fromBot = false) {
 
   if (
     !currentQuiz ||
@@ -2693,6 +3097,14 @@ function checkAnswer(answer) {
   }
 
   else {
+
+    // 只有玩家自己答錯才加入玩家的錯題集；機器人不記錄。
+    if (!fromBot) {
+      player.wrongQuestions.push({
+        question: currentQuiz.question,
+        answer: currentQuiz.options[currentQuiz.answer]
+      });
+    }
 
     document.getElementById(
       "cardText"
@@ -2857,6 +3269,84 @@ function showWin(player) {
   ).innerHTML =
     badgeText;
 
+  // 錯題集只整理「玩家」的答題紀錄，機器人的答題不列入。
+  // 即使最後是機器人獲勝，也仍然顯示本局玩家的錯題。
+  const wrongQuestionsElement =
+    document.getElementById("wrongQuestions");
+
+  const humanPlayers =
+    players.filter(p => p.type === "human");
+
+  const totalWrong =
+    humanPlayers.reduce(
+      (total, p) =>
+        total + (p.wrongQuestions ? p.wrongQuestions.length : 0),
+      0
+    );
+
+  if (totalWrong === 0) {
+
+    wrongQuestionsElement.innerHTML = `
+      <h3>📚 玩家錯題整理</h3>
+      <div class="no-wrong-questions">
+        🎉 本局玩家沒有答錯任何題目！
+      </div>
+    `;
+
+  }
+
+  else {
+
+    let wrongText = `
+      <h3>📚 玩家錯題整理</h3>
+    `;
+
+    humanPlayers.forEach(
+      human => {
+
+        if (
+          !human.wrongQuestions ||
+          human.wrongQuestions.length === 0
+        ) return;
+
+        wrongText += `
+          <div class="wrong-player-title">
+            ${human.icon} ${human.name}
+          </div>
+        `;
+
+        human.wrongQuestions.forEach(
+          (wrong, index) => {
+
+            wrongText += `
+              <div class="wrong-question-item">
+
+                <div class="wrong-question-number">
+                  第 ${index + 1} 題
+                </div>
+
+                <div class="wrong-question-text">
+                  ${wrong.question}
+                </div>
+
+                <div class="wrong-answer">
+                  ✅ 正確答案：${wrong.answer}
+                </div>
+
+              </div>
+            `;
+
+          }
+        );
+
+      }
+    );
+
+    wrongQuestionsElement.innerHTML =
+      wrongText;
+
+  }
+
   document.getElementById(
     "winOverlay"
   ).style.display =
@@ -3002,267 +3492,47 @@ function rollBotDice() {
 }
 
 
+function goToPostTest() {
+
+  if (
+    !POST_TEST_URL ||
+    POST_TEST_URL === "請把後測問卷連結貼在這裡"
+  ) {
+
+    alert("請先在程式碼中的 POST_TEST_URL 填入後測問卷連結。");
+
+    return;
+
+  }
+
+  window.location.href = POST_TEST_URL;
+
+}
+
+document
+  .getElementById("postTestFromWin")
+  .addEventListener(
+    "click",
+    goToPostTest
+  );
+
+document
+  .getElementById("postTestFromBank")
+  .addEventListener(
+    "click",
+    goToPostTest
+  );
+
 document
   .getElementById("restartGame")
   .addEventListener(
     "click",
     () => {
 
+      // 「再玩一次」回到最初的人數選擇頁
       location.reload();
 
     }
   );
 
 </script>
-<!-- ==================== 🧪 測試資訊面板 ==================== -->
-<div id="testPanel">
-  <div class="test-title">🧪 測試資訊</div>
-
-  <div>
-    ⏱️ 遊玩時間：
-    <span id="testTime">00:00:00</span>
-  </div>
-
-  <div>
-    🎴 牌堆剩餘：
-    <span id="testPile">60</span> / 60
-  </div>
-
-  <div>
-    🃏 已抽卡片：
-    <span id="testCards">尚未抽牌</span>
-  </div>
-</div>
-
-<style>
-  #testPanel {
-    position: fixed;
-    right: 15px;
-    bottom: 15px;
-    z-index: 9999;
-
-    width: 260px;
-    padding: 14px 16px;
-
-    background: rgba(20, 20, 30, 0.92);
-    color: white;
-    border-radius: 12px;
-
-    font-size: 14px;
-    line-height: 1.8;
-
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  }
-
-  #testPanel .test-title {
-    font-size: 17px;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-
-  #testCards {
-    word-break: break-word;
-  }
-</style>
-
-<script>
-/* ==================== 🧪 測試資訊 ==================== */
-
-/* ---------- 計時器 ---------- */
-
-let testStartTime = null;
-let testEndTime = null;
-let testTimer = null;
-
-
-/* 開始計時 */
-function startTestTimer() {
-
-  // 避免重複開始
-  if (testStartTime !== null) return;
-
-  testStartTime = Date.now();
-
-  updateTestTime();
-
-  testTimer = setInterval(updateTestTime, 1000);
-}
-
-
-/* 停止計時 */
-function stopTestTimer() {
-
-  if (testStartTime === null) return;
-
-  testEndTime = Date.now();
-
-  updateTestTime();
-
-  if (testTimer !== null) {
-    clearInterval(testTimer);
-    testTimer = null;
-  }
-}
-
-
-/* 更新時間 */
-function updateTestTime() {
-
-  const timeElement = document.getElementById("testTime");
-
-  // 還沒開始遊戲
-  if (testStartTime === null) {
-    timeElement.textContent = "00:00:00";
-    return;
-  }
-
-  const endTime =
-    testEndTime !== null
-      ? testEndTime
-      : Date.now();
-
-  const elapsed =
-    Math.floor((endTime - testStartTime) / 1000);
-
-  const hours = Math.floor(elapsed / 3600);
-
-  const minutes =
-    Math.floor((elapsed % 3600) / 60);
-
-  const seconds =
-    elapsed % 60;
-
-  timeElement.textContent =
-    String(hours).padStart(2, "0") + ":" +
-    String(minutes).padStart(2, "0") + ":" +
-    String(seconds).padStart(2, "0");
-}
-
-
-/* ---------- 抽卡紀錄 ---------- */
-
-let testDrawnCards = [];
-
-
-function updateTestPile() {
-
-  const pileElement =
-    document.getElementById("testPile");
-
-  if (typeof drawPile !== "undefined") {
-    pileElement.textContent = drawPile.length;
-  }
-}
-
-
-function updateTestCards() {
-
-  const cardElement =
-    document.getElementById("testCards");
-
-  if (testDrawnCards.length === 0) {
-    cardElement.textContent = "尚未抽牌";
-    return;
-  }
-
-  cardElement.textContent =
-    testDrawnCards
-      .map(id => "#" + id)
-      .join("、");
-}
-
-
-/* ---------- 攔截原本的 drawCard ---------- */
-
-if (typeof drawCard === "function") {
-
-  const originalDrawCard = drawCard;
-
-  drawCard = function() {
-
-    const beforeIds =
-      typeof drawPile !== "undefined"
-        ? drawPile.map(card => card.id)
-        : [];
-
-    // 執行原本的抽卡
-    originalDrawCard();
-
-    const afterIds =
-      typeof drawPile !== "undefined"
-        ? drawPile.map(card => card.id)
-        : [];
-
-    // 找出被抽走的卡片
-    const drawnId =
-      beforeIds.find(id => !afterIds.includes(id));
-
-    if (drawnId !== undefined) {
-      testDrawnCards.push(drawnId);
-    }
-
-    updateTestPile();
-    updateTestCards();
-  };
-}
-
-
-/* ---------- 監測「開始遊戲」 ---------- */
-
-/*
-   找到頁面上的開始遊戲按鈕。
-   按下後才開始計時。
-*/
-
-document.addEventListener("click", function(event) {
-
-  const button = event.target.closest("button");
-
-  if (!button) return;
-
-  const buttonText =
-    button.textContent.trim();
-
-  if (
-    buttonText.includes("開始遊戲") ||
-    buttonText.includes("開始遊玩")
-  ) {
-    startTestTimer();
-  }
-
-});
-
-
-/* ---------- 監測遊戲結束 ---------- */
-
-/*
-   如果原本程式裡的 gameOver 變成 true，
-   就停止計時。
-*/
-
-setInterval(function() {
-
-  if (
-    typeof gameOver !== "undefined" &&
-    gameOver === true
-  ) {
-    stopTestTimer();
-  }
-
-}, 200);
-
-
-/* ---------- 定期更新牌堆 ---------- */
-
-setInterval(updateTestPile, 300);
-
-
-/* ---------- 初始狀態 ---------- */
-
-updateTestTime();
-updateTestPile();
-updateTestCards();
-
-</script>
-</body>
-</html>
